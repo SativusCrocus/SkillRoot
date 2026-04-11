@@ -1,0 +1,8 @@
+{
+  "bindingHash": "0",
+  "base": "2",
+  "modulus": "97",
+  "result": "55",
+  "exponent": "20",
+  "_comment": "Values filled by gen-input.ts. 2^20 mod 97 = 55. qSq/rSq/qMul/rMul arrays are populated programmatically — do not hand-edit."
+}

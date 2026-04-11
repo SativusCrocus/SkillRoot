@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <linearGradient id="fg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="32" height="32" rx="7" fill="#030014"/>
+
+  <!-- Central core -->
+  <circle cx="16" cy="16" r="4.5" fill="none" stroke="url(#fg)" stroke-width="1.5"/>
+  <circle cx="16" cy="16" r="1.8" fill="url(#fg)"/>
+
+  <!-- Up branch -->
+  <line x1="16" y1="11.5" x2="16" y2="7" stroke="#22d3ee" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="14" cy="4.5" r="1.5" fill="#22d3ee" opacity="0.9"/>
+  <circle cx="18" cy="4.5" r="1.5" fill="#22d3ee" opacity="0.9"/>
+  <line x1="16" y1="7" x2="14" y2="4.5" stroke="#22d3ee" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+  <line x1="16" y1="7" x2="18" y2="4.5" stroke="#22d3ee" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+
+  <!-- Right branch -->
+  <line x1="20.5" y1="16" x2="25" y2="16" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="27.5" cy="14" r="1.5" fill="#8b5cf6" opacity="0.9"/>
+  <circle cx="27.5" cy="18" r="1.5" fill="#8b5cf6" opacity="0.9"/>
+  <line x1="25" y1="16" x2="27.5" y2="14" stroke="#8b5cf6" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+  <line x1="25" y1="16" x2="27.5" y2="18" stroke="#8b5cf6" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+
+  <!-- Down branch -->
+  <line x1="16" y1="20.5" x2="16" y2="25" stroke="#6366f1" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="14" cy="27.5" r="1.5" fill="#6366f1" opacity="0.9"/>
+  <circle cx="18" cy="27.5" r="1.5" fill="#6366f1" opacity="0.9"/>
+  <line x1="16" y1="25" x2="14" y2="27.5" stroke="#6366f1" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+  <line x1="16" y1="25" x2="18" y2="27.5" stroke="#6366f1" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+
+  <!-- Left branch -->
+  <line x1="11.5" y1="16" x2="7" y2="16" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="4.5" cy="14" r="1.5" fill="#a78bfa" opacity="0.9"/>
+  <circle cx="4.5" cy="18" r="1.5" fill="#a78bfa" opacity="0.9"/>
+  <line x1="7" y1="16" x2="4.5" y2="14" stroke="#a78bfa" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+  <line x1="7" y1="16" x2="4.5" y2="18" stroke="#a78bfa" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+</svg>

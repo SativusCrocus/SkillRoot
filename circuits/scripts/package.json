@@ -1,0 +1,24 @@
+{
+  "name": "@skillroot/circuit-scripts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "skr-gen-input": "./dist/gen-input.js",
+    "skr-prove": "./dist/prove.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "gen": "tsx gen-input.ts",
+    "prove": "tsx prove.ts"
+  },
+  "dependencies": {
+    "snarkjs": "0.7.4",
+    "circomlibjs": "^0.1.7"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.0",
+    "typescript": "^5.4.0",
+    "@types/node": "^20.10.0"
+  }
+}

@@ -1,0 +1,47 @@
+# deps
+node_modules/
+
+# env
+.env
+.env.local
+.env.*.local
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# foundry
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+contracts/lib/
+
+# circuits
+circuits/ptau/
+circuits/math/build/
+circuits/node_modules/
+circuits/scripts/dist/
+
+# app (next)
+app/.next/
+app/out/
+app/next-env.d.ts
+
+# cli
+cli/dist/
+
+# deployments — everything except .gitkeep and structure files
+deployments/*.json
+!deployments/.gitkeep
+
+# os
+.DS_Store
+Thumbs.db
+
+# editors
+.vscode/
+.idea/
+*.swp

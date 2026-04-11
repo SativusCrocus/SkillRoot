@@ -1,0 +1,21 @@
+{
+  "name": "skillroot",
+  "version": "0.0.1",
+  "private": true,
+  "packageManager": "pnpm@9.6.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build:contracts": "forge build --root contracts",
+    "test:contracts": "forge test --root contracts -vvv",
+    "build:circuits": "./scripts/build-circuits.sh",
+    "build:app": "pnpm -C app build",
+    "build:cli": "pnpm -C cli build",
+    "build": "pnpm build:contracts && pnpm build:circuits && pnpm build:app && pnpm build:cli",
+    "e2e": "./scripts/anvil-e2e.sh"
+  },
+  "devDependencies": {
+    "snarkjs": "0.7.4"
+  }
+}

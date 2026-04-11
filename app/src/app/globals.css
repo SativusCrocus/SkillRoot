@@ -1,0 +1,585 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════════════════════════
+   SkillRoot — globals.css
+   Premium 3D Silk Design System
+   ═══════════════════════════════════════════════════════════════
+   Custom Properties → Base Styles → Component Classes →
+   Utility Classes → Complex Keyframes → Accessibility
+   ═══════════════════════════════════════════════════════════════ */
+
+
+/* ── Custom Properties ───────────────────────────────────────── */
+:root {
+  /* 3D perspective system */
+  --perspective: 1200px;
+  --perspective-origin: 50% 50%;
+
+  /* Glass surface tokens */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-bg-strong: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-light: rgba(255, 255, 255, 0.14);
+  --glass-blur: 24px;
+  --glass-blur-strong: 40px;
+
+  /* Neon palette shortcuts */
+  --neon-cyan: #22d3ee;
+  --neon-violet: #8b5cf6;
+  --neon-indigo: #6366f1;
+
+  /* Void base */
+  --void: #030014;
+  --void-light: #0a0628;
+
+  /* Silk text */
+  --silk: #f0f0ff;
+  --silk-dim: #a0a0c0;
+
+  /* Easing curves */
+  --ease-silk: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Timing tokens */
+  --duration-fast: 150ms;
+  --duration-base: 300ms;
+  --duration-slow: 600ms;
+
+  /* Rotating border angle (animated via @property) */
+  --border-angle: 0deg;
+}
+
+
+/* ── Base Layer ──────────────────────────────────────────────── */
+@layer base {
+  html {
+    background: var(--void);
+    color: var(--silk);
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background: var(--void);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ── Ambient background atmosphere ──
+     Three radial glows create the deep-space silk ambiance.
+     Fixed position so they don't scroll with content. */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(34, 211, 238, 0.07) 0%, transparent 100%),
+      radial-gradient(ellipse 60% 40% at 85% 50%, rgba(139, 92, 246, 0.05) 0%, transparent 100%),
+      radial-gradient(ellipse 50% 35% at 15% 80%, rgba(99, 102, 241, 0.04) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Noise texture overlay ──
+     Fractal noise at 1.5% opacity adds film grain depth
+     that prevents the flat-digital look. */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: 0.018;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Content layers sit above ambient background */
+  main {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Selection ── */
+  ::selection {
+    background: rgba(34, 211, 238, 0.25);
+    color: #f0f0ff;
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  /* ── Focus accessibility ── */
+  :focus-visible {
+    outline: 2px solid var(--neon-cyan);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* ── Base link transitions ── */
+  a {
+    transition: color var(--duration-fast) var(--ease-silk),
+                text-shadow var(--duration-fast) var(--ease-silk);
+  }
+}
+
+
+/* ── Component Layer ─────────────────────────────────────────── */
+@layer components {
+
+  /* ═══════════ GLASS SURFACES ═══════════ */
+
+  /* Standard glass panel — 24px blur, subtle border,
+     compound shadow with inner highlight for depth */
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: 1rem;
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.37),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    transition:
+      border-color var(--duration-base) var(--ease-silk),
+      box-shadow var(--duration-base) var(--ease-silk),
+      transform var(--duration-base) var(--ease-silk);
+    transform-style: preserve-3d;
+  }
+
+  .glass-card:hover {
+    border-color: var(--glass-border-light);
+    box-shadow:
+      0 16px 48px rgba(0, 0, 0, 0.4),
+      0 0 30px -8px rgba(34, 211, 238, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+  }
+
+  /* Heavy frosted glass — for modals, hero cards */
+  .glass-card-strong {
+    background: var(--glass-bg-strong);
+    backdrop-filter: blur(var(--glass-blur-strong));
+    -webkit-backdrop-filter: blur(var(--glass-blur-strong));
+    border: 1px solid var(--glass-border-light);
+    border-radius: 1rem;
+    box-shadow:
+      0 16px 64px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  /* Minimal glass — for nested cards, inputs */
+  .glass-subtle {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 0.75rem;
+  }
+
+
+  /* ═══════════ GLASS INPUT ═══════════ */
+
+  /* Form inputs that match the glass aesthetic */
+  .glass-input {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.75rem;
+    padding: 0.625rem 0.875rem;
+    color: var(--silk);
+    font-size: 0.875rem;
+    transition:
+      border-color var(--duration-fast) var(--ease-silk),
+      box-shadow var(--duration-fast) var(--ease-silk);
+    outline: none;
+  }
+
+  .glass-input::placeholder {
+    color: rgba(160, 160, 192, 0.5);
+  }
+
+  .glass-input:focus {
+    border-color: rgba(34, 211, 238, 0.35);
+    box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.1),
+                0 0 20px -4px rgba(34, 211, 238, 0.15);
+  }
+
+
+  /* ═══════════ ANIMATED GRADIENT BORDER ═══════════ */
+
+  /* Wrap any element — a conic gradient rotates around
+     the border using the --border-angle custom property.
+     Uses mask-composite to punch out the interior. */
+  .gradient-border {
+    position: relative;
+    border-radius: 1rem;
+  }
+
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from var(--border-angle),
+      transparent 25%,
+      var(--neon-cyan) 50%,
+      var(--neon-violet) 75%,
+      transparent 100%
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: border-rotate 4s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+
+  /* ═══════════ TEXT EFFECTS ═══════════ */
+
+  /* Silk iridescent gradient text */
+  .text-gradient {
+    background: linear-gradient(
+      135deg,
+      var(--neon-cyan),
+      var(--neon-violet),
+      var(--neon-cyan)
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Animated shimmer variant */
+  .text-gradient-shimmer {
+    background: linear-gradient(
+      90deg,
+      var(--neon-cyan),
+      var(--neon-violet),
+      var(--neon-cyan),
+      var(--neon-violet),
+      var(--neon-cyan)
+    );
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 4s linear infinite;
+  }
+
+  /* Neon text glow — cyan */
+  .text-glow {
+    text-shadow:
+      0 0 20px rgba(34, 211, 238, 0.4),
+      0 0 60px rgba(34, 211, 238, 0.12);
+  }
+
+  /* Neon text glow — violet */
+  .text-glow-violet {
+    text-shadow:
+      0 0 20px rgba(139, 92, 246, 0.4),
+      0 0 60px rgba(139, 92, 246, 0.12);
+  }
+
+
+  /* ═══════════ DIVIDERS ═══════════ */
+
+  /* Neon horizontal rule — glows cyan */
+  .neon-divider {
+    height: 1px;
+    border: none;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(34, 211, 238, 0.5),
+      transparent
+    );
+    box-shadow: 0 0 8px rgba(34, 211, 238, 0.2);
+  }
+
+  /* Subtle glass divider — minimal */
+  .glass-divider {
+    height: 1px;
+    border: none;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.08),
+      transparent
+    );
+  }
+
+
+  /* ═══════════ SHIMMER OVERLAY ═══════════ */
+
+  /* Add to any element for a sweeping light effect */
+  .shimmer-overlay {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shimmer-overlay::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.04) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2.5s linear infinite;
+    pointer-events: none;
+    border-radius: inherit;
+  }
+
+
+  /* ═══════════ FLOATING PARTICLES ═══════════ */
+
+  /* Small glowing dots that drift organically.
+     Position with absolute + top/left overrides. */
+  .particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--neon-cyan);
+    box-shadow: 0 0 6px var(--neon-cyan);
+    pointer-events: none;
+  }
+
+  .particle-violet {
+    background: var(--neon-violet);
+    box-shadow: 0 0 6px var(--neon-violet);
+  }
+
+  .particle-lg {
+    width: 5px;
+    height: 5px;
+    box-shadow: 0 0 10px currentColor;
+  }
+
+
+  /* ═══════════ BUTTONS ═══════════ */
+
+  /* Ghost silk button — translucent with gradient border */
+  .btn-silk {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.5rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    border-radius: 0.75rem;
+    background: linear-gradient(
+      135deg,
+      rgba(34, 211, 238, 0.1),
+      rgba(139, 92, 246, 0.1)
+    );
+    border: 1px solid rgba(34, 211, 238, 0.2);
+    color: var(--silk);
+    cursor: pointer;
+    transition: all var(--duration-base) var(--ease-silk);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .btn-silk:hover:not(:disabled) {
+    background: linear-gradient(
+      135deg,
+      rgba(34, 211, 238, 0.2),
+      rgba(139, 92, 246, 0.2)
+    );
+    border-color: rgba(34, 211, 238, 0.4);
+    box-shadow: 0 0 25px -4px rgba(34, 211, 238, 0.2);
+    transform: translateY(-1px);
+  }
+
+  .btn-silk:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .btn-silk:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  /* Primary CTA — solid gradient, dark text, neon glow */
+  .btn-primary {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.75rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, #22d3ee, #8b5cf6);
+    border: none;
+    color: #030014;
+    cursor: pointer;
+    transition: all var(--duration-base) var(--ease-silk);
+    box-shadow: 0 0 20px -4px rgba(34, 211, 238, 0.3);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    box-shadow: 0 0 40px -4px rgba(34, 211, 238, 0.45);
+    transform: translateY(-1px);
+    filter: brightness(1.1);
+  }
+
+  .btn-primary:active:not(:disabled) {
+    transform: translateY(0);
+    filter: brightness(0.95);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    filter: saturate(0.5);
+  }
+
+
+  /* ═══════════ 3D PERSPECTIVE CONTAINER ═══════════ */
+
+  /* Apply to a parent to enable 3D transforms on children */
+  .perspective-container {
+    perspective: var(--perspective);
+    perspective-origin: var(--perspective-origin);
+  }
+
+
+  /* ═══════════ STATUS INDICATORS ═══════════ */
+
+  /* Pulsing neon dot */
+  .status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--neon-cyan);
+    box-shadow: 0 0 8px var(--neon-cyan);
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .status-dot-success {
+    background: #34d399;
+    box-shadow: 0 0 8px #34d399;
+  }
+
+  .status-dot-error {
+    background: #f87171;
+    box-shadow: 0 0 8px #f87171;
+  }
+}
+
+
+/* ── Utility Layer ───────────────────────────────────────────── */
+@layer utilities {
+  /* GPU-accelerated layer — use on animated elements */
+  .gpu {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
+  /* Hide scrollbar but keep scroll functionality */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   Complex Keyframes
+   (Supplement the Tailwind keyframes in tailwind.config.ts)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Rotating conic gradient for animated borders */
+@keyframes border-rotate {
+  0%   { --border-angle: 0deg; }
+  100% { --border-angle: 360deg; }
+}
+
+/* Orbital path for hero node animation */
+@keyframes orbit {
+  0%   { transform: rotate(0deg) translateX(var(--orbit-radius, 120px)) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(var(--orbit-radius, 120px)) rotate(-360deg); }
+}
+
+/* Subtle scale breathing for hero elements */
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.03); }
+}
+
+/* Staggered fade-in for list items (use with animation-delay) */
+@keyframes stagger-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   @property Declarations
+   (Required for CSS Houdini animated custom properties)
+   ═══════════════════════════════════════════════════════════════ */
+
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@property --glow-opacity {
+  syntax: '<number>';
+  initial-value: 0.35;
+  inherits: false;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   Accessibility — Reduced Motion
+   ═══════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="grad" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <radialGradient id="core-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.2"/>
+      <stop offset="70%" stop-color="#8b5cf6" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="node-glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <filter id="soft-glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="248" fill="#030014"/>
+  <circle cx="256" cy="256" r="248" fill="url(#core-glow)" opacity="0.4"/>
+
+  <!-- Outer boundary ring -->
+  <circle cx="256" cy="256" r="228" fill="none" stroke="url(#grad)" stroke-width="1" opacity="0.08"/>
+
+  <!-- Central ambient glow -->
+  <circle cx="256" cy="256" r="70" fill="url(#grad)" opacity="0.06" filter="url(#soft-glow)"/>
+
+  <!-- ═══ UPWARD ROOT — Cyan (#22d3ee) ═══ -->
+  <g filter="url(#node-glow)">
+    <path d="M256,228 L256,166" stroke="#22d3ee" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="256" cy="166" r="3.5" fill="#22d3ee"/>
+    <path d="M256,166 Q238,134 220,102" stroke="#22d3ee" stroke-width="1.8" stroke-linecap="round" opacity="0.85"/>
+    <path d="M256,166 Q274,134 292,102" stroke="#22d3ee" stroke-width="1.8" stroke-linecap="round" opacity="0.85"/>
+    <circle cx="220" cy="102" r="7" fill="#22d3ee" opacity="0.9"/>
+    <circle cx="292" cy="102" r="7" fill="#22d3ee" opacity="0.9"/>
+    <!-- Sub-branches -->
+    <path d="M220,102 Q208,82 198,66" stroke="#22d3ee" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+    <circle cx="198" cy="66" r="3" fill="#22d3ee" opacity="0.4"/>
+    <path d="M292,102 Q304,82 314,66" stroke="#22d3ee" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+    <circle cx="314" cy="66" r="3" fill="#22d3ee" opacity="0.4"/>
+  </g>
+
+  <!-- ═══ RIGHT ROOT — Violet (#8b5cf6) ═══ -->
+  <g filter="url(#node-glow)">
+    <path d="M284,256 L346,256" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="346" cy="256" r="3.5" fill="#8b5cf6"/>
+    <path d="M346,256 Q378,238 410,220" stroke="#8b5cf6" stroke-width="1.8" stroke-linecap="round" opacity="0.85"/>
+    <path d="M346,256 Q378,274 410,292" stroke="#8b5cf6" stroke-width="1.8" stroke-linecap="round" opacity="0.85"/>
+    <circle cx="410" cy="220" r="7" fill="#8b5cf6" opacity="0.9"/>
+    <circle cx="410" cy="292" r="7" fill="#8b5cf6" opacity="0.9"/>
+    <path d="M410,220 Q430,208 446,198" stroke="#8b5cf6" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+    <circle cx="446" cy="198" r="3" fill="#8b5cf6" opacity="0.4"/>
+    <path d="M410,292 Q430,304 446,314" stroke="#8b5cf6" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+    <circle cx="446" cy="314" r="3" fill="#8b5cf6" opacity="0.4"/>
+  </g>
+
+  <!-- ═══ DOWNWARD ROOT — Indigo (#6366f1) ═══ -->
+  <g filter="url(#node-glow)">
+    <path d="M256,284 L256,346" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="256" cy="346" r="3.5" fill="#6366f1"/>
+    <path d="M256,346 Q238,378 220,410" stroke="#6366f1" stroke-width="1.8" stroke-linecap="round" opacity="0.85"/>
+    <path d="M256,346 Q274,378 292,410" stroke="#6366f1" stroke-width="1.8" stroke-linecap="round" opacity="0.85"/>
+    <circle cx="220" cy="410" r="7" fill="#6366f1" opacity="0.9"/>
+    <circle cx="292" cy="410" r="7" fill="#6366f1" opacity="0.9"/>
+    <path d="M220,410 Q208,430 198,446" stroke="#6366f1" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+    <circle cx="198" cy="446" r="3" fill="#6366f1" opacity="0.4"/>
+    <path d="M292,410 Q304,430 314,446" stroke="#6366f1" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+    <circle cx="314" cy="446" r="3" fill="#6366f1" opacity="0.4"/>
+  </g>
+
+  <!-- ═══ LEFT ROOT — Lavender (#a78bfa) ═══ -->
+  <g filter="url(#node-glow)">
+    <path d="M228,256 L166,256" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="166" cy="256" r="3.5" fill="#a78bfa"/>
+    <path d="M166,256 Q134,238 102,220" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round" opacity="0.85"/>
+    <path d="M166,256 Q134,274 102,292" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round" opacity="0.85"/>
+    <circle cx="102" cy="220" r="7" fill="#a78bfa" opacity="0.9"/>
+    <circle cx="102" cy="292" r="7" fill="#a78bfa" opacity="0.9"/>
+    <path d="M102,220 Q82,208 66,198" stroke="#a78bfa" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+    <circle cx="66" cy="198" r="3" fill="#a78bfa" opacity="0.4"/>
+    <path d="M102,292 Q82,304 66,314" stroke="#a78bfa" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+    <circle cx="66" cy="314" r="3" fill="#a78bfa" opacity="0.4"/>
+  </g>
+
+  <!-- ═══ CROSS-CONNECTIONS (skill graph edges) ═══ -->
+  <path d="M292,102 Q362,150 410,220" stroke="url(#grad)" stroke-width="0.7" fill="none" opacity="0.08" stroke-dasharray="3 5"/>
+  <path d="M410,292 Q362,362 292,410" stroke="url(#grad)" stroke-width="0.7" fill="none" opacity="0.08" stroke-dasharray="3 5"/>
+  <path d="M220,410 Q150,362 102,292" stroke="url(#grad)" stroke-width="0.7" fill="none" opacity="0.08" stroke-dasharray="3 5"/>
+  <path d="M102,220 Q150,150 220,102" stroke="url(#grad)" stroke-width="0.7" fill="none" opacity="0.08" stroke-dasharray="3 5"/>
+
+  <!-- ═══ CENTRAL CORE ═══ -->
+  <circle cx="256" cy="256" r="24" fill="url(#grad)" opacity="0.06"/>
+  <circle cx="256" cy="256" r="22" fill="none" stroke="url(#grad)" stroke-width="2.5" filter="url(#node-glow)"/>
+  <circle cx="256" cy="256" r="14" fill="none" stroke="url(#grad)" stroke-width="1" opacity="0.3"/>
+  <circle cx="256" cy="256" r="7" fill="url(#grad)" filter="url(#node-glow)"/>
+
+  <!-- Accent particles -->
+  <circle cx="186" cy="144" r="1.5" fill="#22d3ee" opacity="0.3"/>
+  <circle cx="342" cy="162" r="1" fill="#8b5cf6" opacity="0.25"/>
+  <circle cx="170" cy="368" r="1" fill="#6366f1" opacity="0.2"/>
+  <circle cx="350" cy="354" r="1.5" fill="#a78bfa" opacity="0.25"/>
+  <circle cx="322" cy="126" r="1" fill="#22d3ee" opacity="0.2"/>
+  <circle cx="138" cy="312" r="1" fill="#a78bfa" opacity="0.2"/>
+</svg>

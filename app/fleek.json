@@ -1,0 +1,11 @@
+{
+  "$schema": "https://fleek.xyz/schema/fleek-config.json",
+  "sites": [
+    {
+      "slug": "skillroot-app",
+      "distDir": "out",
+      "buildCommand": "pnpm --filter @skillroot/app build",
+      "publicDir": "public"
+    }
+  ]
+}
