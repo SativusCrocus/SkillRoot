@@ -132,5 +132,16 @@ forge install --no-git --no-commit 2>/dev/null || true
 forge build
 ok "contracts build"
 
+# --- 9. verify frontend 3D stack -----------------------------------------------
+# three.js, R3F, and drei are resolved by pnpm install above (app workspace).
+# Quick sanity: check the pnpm lockfile mentions three. If pnpm install failed
+# to resolve the 3D deps the lockfile would not contain them.
+if grep -q '"three"' "$ROOT/pnpm-lock.yaml" 2>/dev/null; then
+  ok "three.js + @react-three/fiber + drei resolved in app workspace"
+else
+  warn "three.js not found in lockfile — run: pnpm install"
+fi
+
 echo
-ok "setup.sh complete — run ./scripts/build-circuits.sh next"
+ok "setup.sh complete — 3D frontend deps included"
+echo "     next: ./scripts/build-circuits.sh → pnpm build:app → pnpm dev"

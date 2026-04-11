@@ -1,6 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════
    SkillRoot — Next.js 14 Configuration
    Static export for Fleek / IPFS / Vercel deployment.
+   Three.js / R3F transpilation for ESM compatibility.
    ═══════════════════════════════════════════════════════════════ */
 
 /** @type {import('next').NextConfig} */
@@ -14,6 +15,9 @@ const nextConfig = {
 
   /* ── React Strict Mode ─────────────────────────────────────── */
   reactStrictMode: true,
+
+  /* ── Three.js ESM Transpilation ────────────────────────────── */
+  transpilePackages: ['three'],
 
   /* ── Webpack ───────────────────────────────────────────────── */
   webpack: (config) => {

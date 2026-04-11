@@ -14,11 +14,48 @@
   <img src="https://img.shields.io/badge/solidity-0.8.24-6366f1?style=flat-square" alt="Solidity 0.8.24" />
   <img src="https://img.shields.io/badge/circom-2-22d3ee?style=flat-square" alt="Circom 2" />
   <img src="https://img.shields.io/badge/chain-Base%20Sepolia-a78bfa?style=flat-square" alt="Base Sepolia" />
+  <img src="https://img.shields.io/badge/three.js-r170-000000?style=flat-square&logo=threedotjs" alt="Three.js r170" />
 </p>
 
 <p align="center">
   Prove a skill with zero-knowledge proofs. A stake-weighted validator committee attests. The result is a permanent, decayed on-chain skill score readable by any dApp &mdash; no credentials, no gatekeepers, no universities.
 </p>
+
+---
+
+## 3D Silk Frontend
+
+> Glassmorphism interface with real-time 3D skill visualization. Three.js + React Three Fiber + Framer Motion on a void-black canvas with electric neon accents.
+
+<p align="center">
+  <!-- Screenshot placeholder — replace after first build: pnpm dev → browser screenshot -->
+  <img src="docs/screenshots/hero.png" alt="SkillRoot — 3D Silk Hero" width="720" />
+</p>
+
+<table>
+<tr>
+<td width="50%">
+
+<!-- Screenshot placeholder -->
+<img src="docs/screenshots/submit.png" alt="Submit Proof" width="100%" />
+<p align="center"><em>Submit attestation &mdash; glass form with drag-drop proof upload</em></p>
+
+</td>
+<td width="50%">
+
+<!-- Screenshot placeholder -->
+<img src="docs/screenshots/profile.png" alt="Skill Profile" width="100%" />
+<p align="center"><em>Skill identity &mdash; 3D node graph with decayed score bars</em></p>
+
+</td>
+</tr>
+</table>
+
+- **3D Skill Graph** &mdash; floating domain nodes orbit a central protocol identity in a Three.js scene
+- **Glassmorphism** &mdash; heavy frosted-glass surfaces with animated conic-gradient borders
+- **Silk Palette** &mdash; void black `#030014` &rarr; electric cyan `#22d3ee` &rarr; violet `#8b5cf6`
+- **Particle Systems** &mdash; ambient star-field particles with organic drift motion
+- **60fps Motion** &mdash; Framer Motion staggered entrance choreography throughout
 
 ---
 
@@ -61,8 +98,9 @@ Claimant                  Protocol                    Readers
 | **Storage** | `AttestationStore.sol` | Permanent attestation records with time-decayed score computation. |
 | **Gateway** | `QueryGateway.sol` | Single `verify(address)` returns `uint256[4]` domain scores for any reader. |
 | **Governance** | `Governance.sol` | On-chain proposal/vote/execute. Governs challenge activation, parameter changes, treasury. |
+| **Security** | `ForgeGuard.sol` | Permissionless forge challenges + mirage break/survive lifecycle. |
 | **ZK Circuit** | `math.circom` | Groth16 modular exponentiation circuit. Proves knowledge of `(base, exp)` satisfying `base^exp mod N = result`. |
-| **Frontend** | Next.js 14 | 3-page static-export dApp. Submit proofs, view skill graph, connect wallet. |
+| **Frontend** | Next.js 14 + Three.js | 3D silk glassmorphism dApp. Three.js skill graph, glass panels, particle systems. Static export. |
 | **CLI** | `skr` | TypeScript CLI: `solve` (generate proof), `validate` (run validator daemon), `status` (check scores). |
 
 ## Monorepo Layout
@@ -70,7 +108,7 @@ Claimant                  Protocol                    Readers
 ```
 contracts/    Foundry / Solidity 0.8.24 smart contracts
 circuits/     Circom 2 + snarkjs Groth16 circuits
-app/          Next.js 14 static-export frontend
+app/          Next.js 14 + Three.js + R3F — 3D silk glassmorphism frontend (static export)
 cli/          TypeScript CLI (skr) with integrated validator daemon
 docs/         Architecture, contracts, circuits, tokenomics, threat model, roadmap
 scripts/      Automation (setup, build, ceremony, deploy, e2e)
@@ -83,7 +121,7 @@ scripts/      Automation (setup, build, ceremony, deploy, e2e)
 git clone https://github.com/SativusCrocus/SkillRoot.git
 cd SkillRoot
 ./scripts/setup.sh          # idempotent toolchain install (foundry, circom, snarkjs, node)
-pnpm install                # workspace dependencies
+pnpm install                # workspace dependencies (includes three.js / R3F)
 
 # 2. Build everything
 forge build --root contracts
@@ -95,8 +133,8 @@ forge test --root contracts -vvv
 # 4. Run the full lifecycle on local testnet
 ./scripts/anvil-e2e.sh
 
-# 5. Start the frontend
-cd app && npm run dev
+# 5. Start the 3D frontend
+pnpm dev                    # → http://localhost:3000
 ```
 
 ## Skill Domains
@@ -132,6 +170,19 @@ v0 ships one active circuit. The contract layer supports four domain slots:
 - Next.js static export only (IPFS-compatible)
 - Validator daemon folded into `skr validate` &mdash; no separate daemon package
 - All slashed tokens burned (deflationary under adversarial behavior)
+
+## Frontend Stack
+
+| Package | Version | Role |
+|---------|---------|------|
+| Next.js | 14.2.15 | Static-export framework (`output: 'export'`) |
+| Three.js | 0.170.0 | WebGL 3D rendering engine |
+| React Three Fiber | 8.17.10 | Declarative Three.js for React |
+| Drei | 9.117.0 | R3F helpers (Float, MeshDistortMaterial, environment) |
+| Framer Motion | 11.11.11 | Layout animations, entrance choreography |
+| Tailwind CSS | 3.4.x | Utility-first CSS with custom silk design tokens |
+| wagmi + viem | 2.x | Ethereum wallet connection and contract reads |
+| RainbowKit | 2.1.x | Wallet connect modal (themed to silk palette) |
 
 ## Documentation
 

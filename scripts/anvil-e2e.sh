@@ -338,12 +338,25 @@ if [ -z "$APPLIED_MATH_SCORE" ] || [ "$APPLIED_MATH_SCORE" = "0" ]; then
   exit 1
 fi
 
+# --- 12. frontend static export build ----------------------------------------
+info "building frontend static export"
+cd "$ROOT"
+pnpm build:app 2>&1 | tail -5
+if [ -d "$ROOT/app/out" ]; then
+  ok "frontend static export verified (app/out/)"
+else
+  err "frontend build did not produce app/out/"
+  exit 1
+fi
+
 echo
-printf "${GRN}=======================================${NC}\n"
-printf "${GRN}  Gate 5 PASS — full lifecycle green  ${NC}\n"
-printf "${GRN}=======================================${NC}\n"
+printf "${GRN}=============================================${NC}\n"
+printf "${GRN}  Gate 5 PASS — full lifecycle green         ${NC}\n"
+printf "${GRN}  + frontend 3D static export verified       ${NC}\n"
+printf "${GRN}=============================================${NC}\n"
 echo "  deployer / claimant : $DEPLOYER"
 echo "  challenge id        : $CHALLENGE_ID"
 echo "  claim id            : $CLAIM_ID"
 echo "  committee size      : $COMMITTEE_SIZE"
 echo "  applied-math score  : $APPLIED_MATH_SCORE"
+echo "  frontend            : app/out/ (static export)"

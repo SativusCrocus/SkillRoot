@@ -2,21 +2,29 @@
    File: src/app/me/page.tsx
    SkillRoot — My Identity / Profile Page
    ═══════════════════════════════════════════════════════════════
-   Silk skill-graph visualization showing the user's on-chain
-   identity. Glass panels for wallet info, animated neon-gradient
-   score bars for each skill domain, staking status, and a
-   visual skill-domain radar-style display.
+   Silk skill-graph visualization with real Three.js 3D scene
+   showing the user's on-chain identity. Glass panels for wallet
+   info, animated neon-gradient score bars for each skill domain,
+   staking status, and a 3D skill-domain graph.
    ═══════════════════════════════════════════════════════════════ */
 
 'use client';
 
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { useAccount, useReadContract } from 'wagmi';
 import { ConnectButton } from '@/components/ConnectButton';
 import { contracts } from '@/lib/contracts';
 import { queryGatewayAbi, stakingVaultAbi, skrTokenAbi } from '@/lib/abis';
 import { formatEther } from 'viem';
+import type { DomainScore } from '@/components/SkillGraphScene';
+
+/* ── Three.js Skill Graph (client-only, no SSR) ────────────────── */
+const SkillGraphScene = dynamic(() => import('@/components/SkillGraphScene'), {
+  ssr: false,
+  loading: () => <div className="w-full h-[300px] sm:h-[360px]" />,
+});
 
 /* ── Domain Configuration ────────────────────────────────────── */
 const DOMAINS = [
@@ -86,6 +94,14 @@ export default function MePage() {
   const maxScore = scoresArray
     ? scoresArray.reduce((max, s) => (s > max ? s : max), 0n)
     : 0n;
+
+  /* Map on-chain scores to DomainScore[] for the 3D scene */
+  const domainScores: DomainScore[] = DOMAINS.map((d, i) => {
+    const raw = scoresArray?.[i] ?? 0n;
+    const hasScore = raw > 0n;
+    const score = maxScore > 0n ? Number((raw * 100n) / maxScore) / 100 : 0;
+    return { label: d.label, color: d.color, score, hasScore };
+  });
 
   return (
     <motion.div
@@ -258,97 +274,18 @@ export default function MePage() {
             </div>
           </motion.div>
 
-          {/* ── Skill Graph Visual — Domain Nodes ────────────── */}
+          {/* ── Skill Graph Visual — Three.js 3D Scene ───────── */}
           <motion.div variants={fadeUp}>
             <div className="glass-card p-6 sm:p-8 space-y-4">
               <h2 className="text-sm font-semibold text-silk uppercase tracking-wider">
                 Skill Graph
               </h2>
 
-              {/* Mini node visualization — shows domain connectivity */}
-              <div className="relative mx-auto w-full max-w-sm aspect-square perspective-container">
-                {/* Center identity node */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-                  <div className="relative">
-                    <div className="absolute -inset-4 rounded-full bg-gradient-to-br from-neon-cyan/15 to-neon-violet/15 blur-lg animate-pulse-glow" />
-                    <div className="relative w-12 h-12 rounded-full bg-gradient-to-br from-neon-cyan to-neon-violet shadow-glow flex items-center justify-center">
-                      <span className="text-void font-bold text-xs">YOU</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Domain nodes positioned around the center */}
-                {DOMAINS.map((domain, i) => {
-                  const score = scoresArray?.[i] ?? 0n;
-                  const hasScore = score > 0n;
-                  const angleRad = ((i * 90 - 90) * Math.PI) / 180;
-                  const radius = 100;
-                  const x = Math.cos(angleRad) * radius;
-                  const y = Math.sin(angleRad) * radius;
-
-                  return (
-                    <motion.div
-                      key={domain.label}
-                      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-                      style={{ x, y }}
-                      animate={{
-                        y: [y, y - 6, y + 3, y],
-                      }}
-                      transition={{
-                        duration: 4 + i * 0.5,
-                        repeat: Infinity,
-                        ease: 'easeInOut',
-                        delay: i * 0.3,
-                      }}
-                    >
-                      {/* Connection line to center */}
-                      <svg
-                        className="absolute top-1/2 left-1/2 -z-10 pointer-events-none overflow-visible"
-                        width="1"
-                        height="1"
-                        aria-hidden="true"
-                      >
-                        <line
-                          x1="0"
-                          y1="0"
-                          x2={-x}
-                          y2={-y}
-                          stroke={domain.color}
-                          strokeOpacity={hasScore ? 0.25 : 0.06}
-                          strokeWidth={hasScore ? 1.5 : 1}
-                          strokeDasharray={hasScore ? 'none' : '4 4'}
-                        />
-                      </svg>
-
-                      {/* Node */}
-                      <div
-                        className={`glass-card px-3 py-2 flex flex-col items-center gap-1 min-w-[56px] transition-all duration-500 ${
-                          hasScore
-                            ? 'border-white/[0.12] shadow-glow-xs'
-                            : 'opacity-50'
-                        }`}
-                      >
-                        <span
-                          className="text-lg font-mono"
-                          style={{ color: domain.color }}
-                        >
-                          {domain.icon}
-                        </span>
-                        <span className="text-2xs text-silk-dim font-medium tracking-wider uppercase whitespace-nowrap">
-                          {domain.label.replace('_', ' ')}
-                        </span>
-                        {hasScore && (
-                          <span
-                            className="text-2xs font-mono font-semibold"
-                            style={{ color: domain.color }}
-                          >
-                            {formatScore(score)}
-                          </span>
-                        )}
-                      </div>
-                    </motion.div>
-                  );
-                })}
+              {/* Three.js identity graph — domain nodes sized by score,
+                  connection beams solid for scored / dashed for empty,
+                  gentle auto-rotation, star background */}
+              <div className="w-full h-[300px] sm:h-[360px]">
+                <SkillGraphScene domains={domainScores} />
               </div>
             </div>
           </motion.div>

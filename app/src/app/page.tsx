@@ -2,10 +2,10 @@
    File: src/app/page.tsx
    SkillRoot — Landing Page
    ═══════════════════════════════════════════════════════════════
-   3D hero section with floating capability nodes orbiting a
-   central protocol identity. Ambient particle field provides
-   depth. Glass challenge card shows on-chain state. Full
-   Framer Motion staggered entrance animations throughout.
+   3D hero section with Three.js floating capability nodes
+   orbiting a central distorted orb. Ambient CSS particle field
+   provides depth around the canvas. Glass challenge card shows
+   on-chain state. Full Framer Motion staggered entrance.
    ═══════════════════════════════════════════════════════════════ */
 
 'use client';
@@ -13,19 +13,18 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ConnectButton } from '@/components/ConnectButton';
 import { useReadContract } from 'wagmi';
 import { contracts } from '@/lib/contracts';
 import { challengeRegistryAbi } from '@/lib/abis';
 
-/* ── Skill-Domain Node Data ──────────────────────────────────── */
-const DOMAINS = [
-  { label: 'ALGO',        icon: '{}',  color: '#22d3ee', angle: 0   },
-  { label: 'FORMAL_VER',  icon: '\u2234',  color: '#8b5cf6', angle: 90  },
-  { label: 'APPLIED_MATH',icon: '\u03A3',  color: '#6366f1', angle: 180 },
-  { label: 'SEC_CODE',    icon: '\u26A0',  color: '#a78bfa', angle: 270 },
-] as const;
+/* ── Three.js Hero Scene (client-only, no SSR) ─────────────────── */
+const SkillOrbScene = dynamic(() => import('@/components/SkillOrbScene'), {
+  ssr: false,
+  loading: () => <div className="w-full h-[340px] sm:h-[420px]" />,
+});
 
 /* ── Floating Particles ──────────────────────────────────────── */
 /* Deterministic seeded PRNG to avoid server/client hydration mismatch */
@@ -205,94 +204,18 @@ export default function Home() {
           </motion.div>
         </div>
 
-        {/* ── 3D Skill-Domain Orbit ──
-            Four domain nodes orbit a central core using CSS
-            transforms. Each node is a glass hexagon with the
-            domain icon and a neon glow matching its colour.
-            Pure CSS 3D — no WebGL required. */}
+        {/* ── 3D Skill-Domain Orbit (Three.js) ──
+            Real WebGL scene: distorted central orb, crystalline
+            domain nodes on an orbital ring, star field, dual
+            coloured point lights. Renders client-only via
+            next/dynamic ssr:false. */}
         <motion.div
           variants={scaleIn}
-          className="relative mx-auto w-[280px] h-[280px] sm:w-[360px] sm:h-[360px] mt-8 perspective-container"
+          className="relative w-full max-w-xl mx-auto mt-4"
         >
-          {/* Central core — pulsing orb */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="relative">
-              {/* Outer glow ring */}
-              <div className="absolute -inset-6 rounded-full bg-gradient-to-br from-neon-cyan/20 to-neon-violet/20 blur-xl animate-pulse-glow" />
-              {/* Inner orb — logo mark */}
-              <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden shadow-glow-lg">
-                <Image src="/logo.svg" alt="SkillRoot" width={80} height={80} className="w-full h-full" />
-              </div>
-            </div>
+          <div className="w-full h-[340px] sm:h-[420px]">
+            <SkillOrbScene />
           </div>
-
-          {/* Orbit ring — subtle glass circle */}
-          <div className="absolute inset-8 sm:inset-10 rounded-full border border-white/[0.04]" />
-
-          {/* Domain nodes — positioned at cardinal points and orbiting */}
-          {DOMAINS.map((domain, i) => {
-            /* Calculate position on the orbit circle */
-            const radius = 120; /* px from center */
-            const angleRad = ((domain.angle - 90) * Math.PI) / 180;
-            const x = Math.cos(angleRad) * radius;
-            const y = Math.sin(angleRad) * radius;
-
-            return (
-              <motion.div
-                key={domain.label}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-                style={{ x, y }}
-                animate={{
-                  y: [y, y - 8, y + 4, y],
-                  scale: [1, 1.05, 0.98, 1],
-                }}
-                transition={{
-                  duration: 5 + i * 0.7,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                  delay: i * 0.4,
-                }}
-              >
-                {/* Node glow backdrop */}
-                <div
-                  className="absolute -inset-3 rounded-xl blur-lg opacity-30"
-                  style={{ background: domain.color }}
-                />
-                {/* Glass node surface */}
-                <div className="relative glass-card px-3 py-2 sm:px-4 sm:py-3 flex flex-col items-center gap-1 min-w-[60px] sm:min-w-[72px] cursor-default group">
-                  {/* Domain icon */}
-                  <span
-                    className="text-lg sm:text-xl font-mono transition-transform duration-300 group-hover:scale-110"
-                    style={{ color: domain.color }}
-                  >
-                    {domain.icon}
-                  </span>
-                  {/* Domain label */}
-                  <span className="text-2xs font-medium text-silk-dim tracking-wider uppercase whitespace-nowrap">
-                    {domain.label.replace('_', ' ')}
-                  </span>
-                  {/* Connection line to center (SVG) */}
-                  <svg
-                    className="absolute top-1/2 left-1/2 -z-10 pointer-events-none overflow-visible"
-                    width="1"
-                    height="1"
-                    aria-hidden="true"
-                  >
-                    <line
-                      x1="0"
-                      y1="0"
-                      x2={-x}
-                      y2={-y}
-                      stroke={domain.color}
-                      strokeOpacity="0.12"
-                      strokeWidth="1"
-                      strokeDasharray="4 4"
-                    />
-                  </svg>
-                </div>
-              </motion.div>
-            );
-          })}
         </motion.div>
       </section>
 

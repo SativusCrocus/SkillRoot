@@ -6,6 +6,11 @@
   "engines": {
     "node": ">=20"
   },
+  "workspaces": [
+    "app",
+    "cli",
+    "circuits/scripts"
+  ],
   "scripts": {
     "build:contracts": "forge build --root contracts",
     "test:contracts": "forge test --root contracts -vvv",
@@ -13,6 +18,7 @@
     "build:app": "pnpm -C app build",
     "build:cli": "pnpm -C cli build",
     "build": "pnpm build:contracts && pnpm build:circuits && pnpm build:app && pnpm build:cli",
+    "dev": "pnpm -C app dev",
     "e2e": "./scripts/anvil-e2e.sh"
   },
   "devDependencies": {
