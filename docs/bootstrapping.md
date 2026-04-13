@@ -42,15 +42,14 @@ Solo dev, MacBook + frontier AI. Target: end-to-end working system on Base Sepol
 - [x] `scripts/anvil-e2e.sh` headless full lifecycle → **Gate 5** ✅
 - [x] `scripts/deploy-sepolia.sh`, `scripts/seed-challenges.sh`
 - [x] 7 markdown docs: architecture, contracts, circuits, tokenomics, bootstrapping, threat-model, ROADMAP
-- [ ] **(manual)** Deploy to Base Sepolia, write `deployments/base-sepolia.json`
-      → run `PRIVATE_KEY=… RPC_URL=… ./scripts/deploy-sepolia.sh`
-- [ ] **(manual)** Seed math challenge via governance transaction
-      → run `./scripts/seed-challenges.sh` after deploy-sepolia
+- [x] **(manual)** Deploy to Base Sepolia, write `deployments/base-sepolia.json`
+      → deployed 2026-04-13 via `./scripts/deploy-sepolia.sh` — 10 contracts live
+- [x] **(manual)** Seed math challenge via governance transaction
+      → challenge #1 (APPLIED_MATH) ACTIVE via `./scripts/seed-challenges.sh`
 
 ### Week 7 — dApp hosting + external validator onboarding
-- [ ] **(mostly manual)** Fleek deployment, custom domain
-      → `app/fleek.json` is committed; `./scripts/fleek-deploy.sh` wraps the build+publish
-      → requires one-time manual steps: `fleek login`, `fleek sites init`, custom-domain DNS
+- [x] **(manual)** Vercel production deployment
+      → live at https://app-nine-rho-70.vercel.app — env vars set via `vercel env add`
 - [x] Write validator operator guide → `docs/VALIDATOR-OPERATOR.md`
 - [ ] **(manual)** Invite 5 external operators from target communities (ZK, math proofs, formal methods)
 - [ ] **(manual exec, scripted)** Grant 5,000 SKR each from governance treasury (25k SKR operator grants)

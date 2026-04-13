@@ -17,7 +17,7 @@ import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ConnectButton } from '@/components/ConnectButton';
 import { useReadContract } from 'wagmi';
-import { contracts } from '@/lib/contracts';
+import { contracts, allContracts, BASESCAN_URL } from '@/lib/contracts';
 import { challengeRegistryAbi } from '@/lib/abis';
 
 /* ── Three.js Hero Scene (client-only, no SSR) ─────────────────── */
@@ -312,6 +312,49 @@ export default function Home() {
               </div>
             </div>
           )}
+        </div>
+      </motion.section>
+
+      {/* ══════════════════════════════════════════════════════
+          Deployed Contracts
+          ══════════════════════════════════════════════════════ */}
+      <motion.section variants={fadeUp} className="space-y-4">
+        <div className="flex items-center gap-3 mb-2">
+          <h2 className="text-lg font-semibold text-silk">Deployed Contracts</h2>
+          <hr className="neon-divider flex-1" />
+          <span className="text-xs text-silk-muted font-mono">Base Sepolia</span>
+        </div>
+
+        <div className="glass-card p-4 sm:p-6 space-y-2">
+          {allContracts.map((c, i) => {
+            const addr = contracts[c.key];
+            const isZero = addr === '0x0000000000000000000000000000000000000000';
+            return (
+              <motion.div
+                key={c.key}
+                initial={{ opacity: 0, x: -12 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 1.2 + i * 0.06, duration: 0.4 }}
+                className="flex items-center justify-between gap-2 py-1.5 border-b border-white/[0.04] last:border-0"
+              >
+                <span className="text-xs sm:text-sm text-silk-dim font-medium shrink-0 w-40 sm:w-48">
+                  {c.name}
+                </span>
+                {isZero ? (
+                  <span className="text-xs text-silk-faint font-mono">not deployed</span>
+                ) : (
+                  <a
+                    href={`${BASESCAN_URL}/address/${addr}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-mono text-neon-cyan hover:text-neon-cyan/80 transition-colors truncate"
+                  >
+                    {addr}
+                  </a>
+                )}
+              </motion.div>
+            );
+          })}
         </div>
       </motion.section>
 

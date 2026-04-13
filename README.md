@@ -114,6 +114,25 @@ docs/         Architecture, contracts, circuits, tokenomics, threat model, roadm
 scripts/      Automation (setup, build, ceremony, deploy, e2e)
 ```
 
+## Base Sepolia Deployment
+
+All contracts are live on **Base Sepolia** (chain 84532). Frontend: [app-nine-rho-70.vercel.app](https://app-nine-rho-70.vercel.app)
+
+| Contract | Address |
+|----------|---------|
+| SKRToken | [`0xbd8Fe0fE752A1B0135DDdD99357De060e2C92392`](https://sepolia.basescan.org/address/0xbd8Fe0fE752A1B0135DDdD99357De060e2C92392) |
+| Governance | [`0x0Bd5D8Cb003EE175D19B29F8B50E99d5959eABDE`](https://sepolia.basescan.org/address/0x0Bd5D8Cb003EE175D19B29F8B50E99d5959eABDE) |
+| StakingVault | [`0x0aD5A748965895709a0D68E3e669dCB97a6B43C1`](https://sepolia.basescan.org/address/0x0aD5A748965895709a0D68E3e669dCB97a6B43C1) |
+| ChallengeRegistry | [`0x7585959e8f0B5C17D40ff0Cd2564417E50135c78`](https://sepolia.basescan.org/address/0x7585959e8f0B5C17D40ff0Cd2564417E50135c78) |
+| Sortition | [`0x7022D0326E296F78664F4506e42D39aD0bd188D6`](https://sepolia.basescan.org/address/0x7022D0326E296F78664F4506e42D39aD0bd188D6) |
+| AttestationStore | [`0x013D4edC39B9b594dD809139b283Eb6ef313c8AA`](https://sepolia.basescan.org/address/0x013D4edC39B9b594dD809139b283Eb6ef313c8AA) |
+| AttestationEngine | [`0x86b5A121568829981593e5Be2D597dFb99DC7E49`](https://sepolia.basescan.org/address/0x86b5A121568829981593e5Be2D597dFb99DC7E49) |
+| QueryGateway | [`0xFb648E415BAbBbFBf882Cc64a02cBc5DAFAB0D14`](https://sepolia.basescan.org/address/0xFb648E415BAbBbFBf882Cc64a02cBc5DAFAB0D14) |
+| MathGroth16Verifier | [`0x39041f0DB8E566c72D407d81F67B931560B30619`](https://sepolia.basescan.org/address/0x39041f0DB8E566c72D407d81F67B931560B30619) |
+| MathVerifierAdapter | [`0x0984eC92acf7AA83454c26862ef25856Df862Edd`](https://sepolia.basescan.org/address/0x0984eC92acf7AA83454c26862ef25856Df862Edd) |
+
+Challenge #1 (APPLIED_MATH &mdash; modular exponentiation) is **ACTIVE**. See [`docs/TESTNET_FIRST_ATTESTATION.md`](docs/TESTNET_FIRST_ATTESTATION.md) for the end-to-end walkthrough.
+
 ## Quickstart
 
 ```bash
