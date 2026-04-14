@@ -79,22 +79,23 @@ echo
 # ============================================================================
 info "Check 1: Contract bytecode"
 
-declare -A CONTRACTS=(
-  [SKRToken]="$TOKEN"
-  [Governance]="$GOVERNANCE"
-  [StakingVault]="$VAULT"
-  [ChallengeRegistry]="$REGISTRY"
-  [Sortition]="$SORTITION"
-  [AttestationStore]="$STORE"
-  [AttestationEngine]="$ENGINE"
-  [QueryGateway]="$GATEWAY"
-  [MathGroth16Verifier]="$GROTH16"
-  [MathVerifierAdapter]="$ADAPTER"
+CONTRACTS=(
+  "SKRToken:$TOKEN"
+  "Governance:$GOVERNANCE"
+  "StakingVault:$VAULT"
+  "ChallengeRegistry:$REGISTRY"
+  "Sortition:$SORTITION"
+  "AttestationStore:$STORE"
+  "AttestationEngine:$ENGINE"
+  "QueryGateway:$GATEWAY"
+  "MathGroth16Verifier:$GROTH16"
+  "MathVerifierAdapter:$ADAPTER"
 )
 
 LIVE_COUNT=0
-for name in "${!CONTRACTS[@]}"; do
-  addr="${CONTRACTS[$name]}"
+for entry in "${CONTRACTS[@]}"; do
+  name="${entry%%:*}"
+  addr="${entry#*:}"
   CODE=$(cast code "$addr" --rpc-url "$RPC" 2>/dev/null || echo "0x")
   if [ "$CODE" != "0x" ] && [ "${#CODE}" -gt 4 ]; then
     LIVE_COUNT=$((LIVE_COUNT + 1))

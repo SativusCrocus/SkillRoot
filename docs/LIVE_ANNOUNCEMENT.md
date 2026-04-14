@@ -1,6 +1,6 @@
 # SkillRoot v0 — Public Announcement (copy-paste ready)
 
-All links, addresses, and numbers below are live. Replace `<CLAIM_TX>` with the actual finalization tx hash from the bootstrap script output.
+All links, addresses, and numbers below are live.
 
 ---
 
@@ -116,7 +116,7 @@ The first on-chain skill attestation has been finalized.
 **Links:**
 - App: https://app-nine-rho-70.vercel.app
 - AttestationEngine: https://sepolia.basescan.org/address/0x86b5A121568829981593e5Be2D597dFb99DC7E49
-- First attestation tx: https://sepolia.basescan.org/tx/<CLAIM_TX>
+- First attestation tx: https://sepolia.basescan.org/tx/0xb82542808aeadcd29b05a1f41c6a0148566c786dc392a874d666f91ed9acd7eb
 - Repo: https://github.com/SativusCrocus/SkillRoot
 
 **Want to validate?**
@@ -170,7 +170,7 @@ The SkillRoot primitive is live on Base Sepolia with its first finalized on-chai
 - **Proof:** `3^7 mod 13 = 3` (Groth16, BN254)
 - **Validators:** 5 bonded, committee of 7 drawn via Sortition
 - **Result:** FINALIZED_ACCEPT
-- **Tx:** [`<CLAIM_TX>`](https://sepolia.basescan.org/tx/<CLAIM_TX>)
+- **Tx:** [`0xb82542808aeadcd29b05a1f41c6a0148566c786dc392a874d666f91ed9acd7eb`](https://sepolia.basescan.org/tx/0xb82542808aeadcd29b05a1f41c6a0148566c786dc392a874d666f91ed9acd7eb)
 
 ### Run it yourself
 

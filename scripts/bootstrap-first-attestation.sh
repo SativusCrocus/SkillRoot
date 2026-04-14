@@ -116,7 +116,7 @@ ok "CLI ready"
 # --- Constants --------------------------------------------------------------
 NUM_VAL=5
 STAKE_SKR=5000
-ETH_PER_VAL="0.005"
+ETH_PER_VAL="0.0002"
 VAL_DIR="$HOME/.skr/validators"
 LOG_DIR="$HOME/.skr/logs"
 mkdir -p "$VAL_DIR" "$LOG_DIR"
