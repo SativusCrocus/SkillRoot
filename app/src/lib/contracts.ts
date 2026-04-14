@@ -1,23 +1,26 @@
 import type { Address } from 'viem';
 
-function envAddr(key: string): Address {
-  const v = process.env[key];
-  if (!v || !v.startsWith('0x')) {
-    return '0x0000000000000000000000000000000000000000';
-  }
-  return v as Address;
+const ZERO: Address = '0x0000000000000000000000000000000000000000';
+
+/* NOTE: Next.js only inlines `process.env.NEXT_PUBLIC_*` when accessed as a
+   static property. Dynamic lookups like `process.env[key]` are NOT replaced
+   by webpack's DefinePlugin and become `undefined` in the browser bundle,
+   which is why every contract rendered as "not deployed". Keep these as
+   literal static accesses. */
+function addr(v: string | undefined): Address {
+  return v && v.startsWith('0x') ? (v as Address) : ZERO;
 }
 
 export const contracts = {
-  token:             envAddr('NEXT_PUBLIC_SKR_TOKEN'),
-  vault:             envAddr('NEXT_PUBLIC_STAKING_VAULT'),
-  registry:          envAddr('NEXT_PUBLIC_CHALLENGE_REGISTRY'),
-  engine:            envAddr('NEXT_PUBLIC_ATTESTATION_ENGINE'),
-  gateway:           envAddr('NEXT_PUBLIC_QUERY_GATEWAY'),
-  governance:        envAddr('NEXT_PUBLIC_GOVERNANCE'),
-  sortition:         envAddr('NEXT_PUBLIC_SORTITION'),
-  store:             envAddr('NEXT_PUBLIC_ATTESTATION_STORE'),
-  mathVerifier:      envAddr('NEXT_PUBLIC_MATH_VERIFIER'),
+  token:             addr(process.env.NEXT_PUBLIC_SKR_TOKEN),
+  vault:             addr(process.env.NEXT_PUBLIC_STAKING_VAULT),
+  registry:          addr(process.env.NEXT_PUBLIC_CHALLENGE_REGISTRY),
+  engine:            addr(process.env.NEXT_PUBLIC_ATTESTATION_ENGINE),
+  gateway:           addr(process.env.NEXT_PUBLIC_QUERY_GATEWAY),
+  governance:        addr(process.env.NEXT_PUBLIC_GOVERNANCE),
+  sortition:         addr(process.env.NEXT_PUBLIC_SORTITION),
+  store:             addr(process.env.NEXT_PUBLIC_ATTESTATION_STORE),
+  mathVerifier:      addr(process.env.NEXT_PUBLIC_MATH_VERIFIER),
 } as const;
 
 export const CHAIN_ID = Number(process.env.NEXT_PUBLIC_CHAIN_ID || '84532');
