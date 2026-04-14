@@ -2,6 +2,45 @@
 
 End-to-end: fund wallets → bootstrap validators → solve modexp → submit proof → committee vote → finalize → verify live.
 
+---
+
+## Live record
+
+The first attestation on SkillRoot v0 has been finalized on Base Sepolia. All numbers below are recorded on-chain.
+
+| Field | Value |
+|-------|-------|
+| Network | Base Sepolia (chain 84532) |
+| Challenge | APPLIED_MATH #1 — modular exponentiation |
+| Proof statement | `3^7 mod 13 = 3` (Groth16, BN254) |
+| Validators bonded | 5 × 5,000 SKR = 25,000 SKR total |
+| Committee | 5 members drawn via stake-weighted Sortition |
+| Vote | 5 YES / 0 NO (unanimous) |
+| Status | `FINALIZED_ACCEPT` (enum 2) |
+| Finalize block | 40207885 |
+| Finalize tx | [`0xb82542808aeadcd29b05a1f41c6a0148566c786dc392a874d666f91ed9acd7eb`](https://sepolia.basescan.org/tx/0xb82542808aeadcd29b05a1f41c6a0148566c786dc392a874d666f91ed9acd7eb) |
+| APPLIED_MATH score | ~1000 SKR-weighted (time-decayed) |
+| Proof artifacts | [`proofs/input-1.json`](../proofs/input-1.json), [`proofs/calldata-1.json`](../proofs/calldata-1.json) |
+| Engine | [`0x86b5A121568829981593e5Be2D597dFb99DC7E49`](https://sepolia.basescan.org/address/0x86b5A121568829981593e5Be2D597dFb99DC7E49) |
+
+### Reproduce
+
+```bash
+# Fresh bootstrap: fund 5 validators, stake, run daemons, submit claim, finalize
+./scripts/bootstrap-first-attestation.sh
+
+# Verify a running bootstrap passes all 8 post-bootstrap checks
+./scripts/bootstrap-verify.sh
+```
+
+`bootstrap-verify.sh` confirms: 10/10 contracts live, ≥5 validators bonded with ≥5,000 SKR each, challenge #1 active, claim #1 `FINALIZED_ACCEPT`, `QueryGateway` returns non-zero `APPLIED_MATH` score, `skr query` CLI works, and the committee was drawn.
+
+---
+
+## Manual walkthrough
+
+The script above automates everything below. The manual steps are preserved here for pedagogical value — if you want to understand the end-to-end flow transaction-by-transaction, walk through these. The example numbers below (7 validators, `base=2 exp=20 mod=97`) are illustrative; the bootstrap script uses the live-record parameters above.
+
 ## Prerequisites
 
 | Tool | Check |

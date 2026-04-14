@@ -7,6 +7,13 @@ scope: post-v0
 
 v0 is the minimum surface area that proves the SkillRoot primitive: one circuit, one active challenge, a single CLI validator, no timelock, single-party phase-2 ceremony, testnet only. This document lists the deferred items that v1 — and beyond — should address, with priority and rationale.
 
+## Status
+
+- **v0 live on Base Sepolia** (chain 84532) since 2026-04-13. 10 contracts deployed, 1 challenge (APPLIED_MATH) active, dApp at [app-nine-rho-70.vercel.app](https://app-nine-rho-70.vercel.app).
+- **First attestation finalized** on 2026-04-14 (block 40207885, tx `0xb82542...9acd7eb`). Committee of 5 dev-operated validators voted 5/0 on claim #1 (`3^7 mod 13`).
+- **Release:** [`v0.1.0-testnet`](https://github.com/SativusCrocus/SkillRoot/releases/tag/v0.1.0-testnet).
+- **Next gate:** external validator onboarding (see [`docs/VALIDATOR_ONBOARDING.md`](VALIDATOR_ONBOARDING.md)) and 50+ attestations before the week-8 governance handoff in [`bootstrapping.md`](bootstrapping.md).
+
 ## Legend
 
 | Priority | Meaning |

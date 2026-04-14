@@ -131,7 +131,23 @@ All contracts are live on **Base Sepolia** (chain 84532). Frontend: [app-nine-rh
 | MathGroth16Verifier | [`0x39041f0DB8E566c72D407d81F67B931560B30619`](https://sepolia.basescan.org/address/0x39041f0DB8E566c72D407d81F67B931560B30619) |
 | MathVerifierAdapter | [`0x0984eC92acf7AA83454c26862ef25856Df862Edd`](https://sepolia.basescan.org/address/0x0984eC92acf7AA83454c26862ef25856Df862Edd) |
 
-Challenge #1 (APPLIED_MATH &mdash; modular exponentiation) is **ACTIVE**. See [`docs/TESTNET_FIRST_ATTESTATION.md`](docs/TESTNET_FIRST_ATTESTATION.md) for the end-to-end walkthrough.
+Challenge #1 (APPLIED_MATH &mdash; modular exponentiation) is **ACTIVE**.
+
+### First live attestation
+
+Claim #1 finalized on Base Sepolia with a 5-validator committee voting unanimously YES:
+
+| Field | Value |
+|-------|-------|
+| Challenge | APPLIED_MATH #1 — `3^7 mod 13 = 3` |
+| Validators bonded | 5 × 5,000 SKR = 25,000 SKR |
+| Committee | 5 members drawn via stake-weighted Sortition |
+| Vote | 5 YES / 0 NO (unanimous, above 66.66% quorum) |
+| Status | `FINALIZED_ACCEPT` |
+| Finalize tx | [`0xb82542...9acd7eb`](https://sepolia.basescan.org/tx/0xb82542808aeadcd29b05a1f41c6a0148566c786dc392a874d666f91ed9acd7eb) |
+| Proof artifacts | [`proofs/input-1.json`](proofs/input-1.json), [`proofs/calldata-1.json`](proofs/calldata-1.json) |
+
+Reproduce with `./scripts/bootstrap-first-attestation.sh` (full automated bootstrap) or verify with `./scripts/bootstrap-verify.sh` (8 post-bootstrap checks). See [`docs/TESTNET_FIRST_ATTESTATION.md`](docs/TESTNET_FIRST_ATTESTATION.md) for the manual walkthrough and [`docs/VALIDATOR_ONBOARDING.md`](docs/VALIDATOR_ONBOARDING.md) for running your own validator.
 
 ## Quickstart
 
@@ -214,7 +230,10 @@ v0 ships one active circuit. The contract layer supports four domain slots:
 | [`docs/threat-model.md`](docs/threat-model.md) | Attack surface analysis, risk registry |
 | [`docs/bootstrapping.md`](docs/bootstrapping.md) | 8-week launch plan, operator onboarding |
 | [`docs/ROADMAP.md`](docs/ROADMAP.md) | v1 scope, P0/P1 priorities, research track |
-| [`docs/VALIDATOR-OPERATOR.md`](docs/VALIDATOR-OPERATOR.md) | Validator setup and operations guide |
+| [`docs/VALIDATOR-OPERATOR.md`](docs/VALIDATOR-OPERATOR.md) | Validator setup and operations guide (reference) |
+| [`docs/VALIDATOR_ONBOARDING.md`](docs/VALIDATOR_ONBOARDING.md) | 5-step copy-paste onboarding for new testnet validators |
+| [`docs/TESTNET_FIRST_ATTESTATION.md`](docs/TESTNET_FIRST_ATTESTATION.md) | First live attestation: record + manual walkthrough |
+| [`docs/LIVE_ANNOUNCEMENT.md`](docs/LIVE_ANNOUNCEMENT.md) | v0 launch announcement (X thread, Discord, release body) |
 
 ## Security
 

@@ -20,8 +20,8 @@ If any of these are false, stop here and ask in the operator channel (see [Commu
 ## 1. Install the toolchain
 
 ```bash
-git clone https://github.com/<org>/skillroot.git
-cd skillroot
+git clone https://github.com/SativusCrocus/SkillRoot.git
+cd SkillRoot
 ./scripts/setup.sh
 ```
 
@@ -236,7 +236,7 @@ If your address appears in a slash event, the daemon missed a vote or voted the 
 
 ### Dashboard (optional)
 
-The dApp at `https://skillroot.eth.limo` (once live) has a `/validators` page listing all bonded addresses, their stake, and their recent committee hits. Bookmark it.
+The v0 dApp is live at [`https://app-nine-rho-70.vercel.app`](https://app-nine-rho-70.vercel.app). It currently exposes `/`, `/submit`, and `/me`. A `/validators` dashboard listing bonded addresses, stake, and recent committee hits is a planned v1 addition (see [`ROADMAP.md`](ROADMAP.md)).
 
 ## 9. Unbonding
 

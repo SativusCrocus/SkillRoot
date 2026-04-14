@@ -56,6 +56,10 @@ Solo dev, MacBook + frontier AI. Target: end-to-end working system on Base Sepol
       → run `OPERATORS=0x…,0x…,0x…,0x…,0x… ./scripts/grant-operators.sh`
       → validated end-to-end on anvil
 - [ ] **(manual)** Assist with initial bonding txns
+- [x] **(scripted)** Internal bootstrap smoke test — 5 dev-operated validators, first attestation finalized
+      → `./scripts/bootstrap-first-attestation.sh` (fund → stake → run validate daemons → submit claim → vote → finalize)
+      → `./scripts/bootstrap-verify.sh` (8 post-bootstrap checks, all green)
+      → claim #1 `FINALIZED_ACCEPT` on 2026-04-14 in block 40207885; tx `0xb82542808aeadcd29b05a1f41c6a0148566c786dc392a874d666f91ed9acd7eb`
 - [ ] **(manual)** Run first attested claim with real (non-solo) committee
 
 ### Week 8 — Hardening, feedback loop
@@ -84,6 +88,6 @@ At genesis:
 - 5 independent validators bonded and operating `skr validate`
 - 50+ attestations finalized on Base Sepolia
 - Math circuit proofs verify on-chain in <300k gas
-- Fleek-hosted dApp live at `skillroot.eth.limo` or equivalent
+- Public dApp live (v0 ships on Vercel at [`app-nine-rho-70.vercel.app`](https://app-nine-rho-70.vercel.app); IPFS/Fleek mirror is a v1 item)
 - `ROADMAP.md` published with v1 scope
 - Threat model disclosed publicly, with the single-party ceremony explicitly flagged
