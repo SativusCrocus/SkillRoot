@@ -4,8 +4,8 @@ pragma solidity 0.8.24;
 import {IZKVerifier} from "../interfaces/IZKVerifier.sol";
 
 /// @dev Thin interface to the snarkjs-emitted fixed-size verifier
-///      (4 public signals: bindingHash, targetCircuitHash, exploitTag, exploitCommitment).
-interface IForgeGroth16Verifier {
+///      (4 public signals: bindingHash, base, modulus, claimedResult).
+interface IFraudGroth16Verifier {
     function verifyProof(
         uint256[2] calldata a,
         uint256[2][2] calldata b,
@@ -14,16 +14,21 @@ interface IForgeGroth16Verifier {
     ) external view returns (bool);
 }
 
-/// @title ForgeVerifierAdapter — bridges snarkjs forge verifier to IZKVerifier
-/// @notice ForgeGuard passes dynamic pubSignals; this adapter unpacks
+/// @title FraudVerifierAdapter — bridges the fraud Groth16 verifier to IZKVerifier
+/// @notice AttestationEngine passes dynamic pubSignals; this adapter unpacks
 ///         the first 4 into the fixed-arity call expected by the generated
-///         ForgeVerifier.sol (emitted by snarkjs).
-contract ForgeVerifierAdapter is IZKVerifier {
-    IForgeGroth16Verifier public immutable inner;
+///         FraudVerifier.sol (emitted by snarkjs, not hand-edited).
+///         Public signal order must match circuits/fraud/fraud.circom:
+///           0. bindingHash
+///           1. base
+///           2. modulus
+///           3. claimedResult
+contract FraudVerifierAdapter is IZKVerifier {
+    IFraudGroth16Verifier public immutable inner;
 
     error WrongSignalLength(uint256 got);
 
-    constructor(IForgeGroth16Verifier _inner) {
+    constructor(IFraudGroth16Verifier _inner) {
         inner = _inner;
     }
 
@@ -36,9 +41,9 @@ contract ForgeVerifierAdapter is IZKVerifier {
         if (pubSignals.length != 4) revert WrongSignalLength(pubSignals.length);
         uint256[4] memory fixedSignals = [
             pubSignals[0], // bindingHash
-            pubSignals[1], // targetCircuitHash
-            pubSignals[2], // exploitTag
-            pubSignals[3]  // exploitCommitment
+            pubSignals[1], // base
+            pubSignals[2], // modulus
+            pubSignals[3]  // claimedResult
         ];
         return inner.verifyProof(a, b, c, fixedSignals);
     }

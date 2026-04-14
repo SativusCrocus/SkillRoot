@@ -22,6 +22,7 @@ contracts/lib/
 # circuits
 circuits/ptau/
 circuits/math/build/
+circuits/fraud/build/
 circuits/node_modules/
 circuits/scripts/dist/
 

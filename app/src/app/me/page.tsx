@@ -131,6 +131,7 @@ export default function MePage() {
         <p className="text-sm text-silk-dim">
           Your on-chain skill profile, stake position, and decayed attestation scores.
         </p>
+        <p className="text-xs text-silk-muted">v0.2.0-no-vote · claims settle 24h after submission absent a valid fraud proof</p>
       </motion.div>
 
       {/* ── Not Connected State ──────────────────────────────── */}
