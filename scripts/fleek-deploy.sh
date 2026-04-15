@@ -68,19 +68,20 @@ else
 
   python3 <<PY > "$APP_ENV"
 import json, datetime
+ZERO = "0x0000000000000000000000000000000000000000"
 d = json.load(open("$DEPLOYMENT"))
 c = d["contracts"]
 print(f"# Synced by fleek-deploy.sh at {datetime.datetime.utcnow().isoformat()}Z")
+print(f"# v0.2.0-no-vote: 8 canonical contracts")
 print(f"NEXT_PUBLIC_CHAIN_ID={d.get('chainId', 84532)}")
-print(f"NEXT_PUBLIC_SKR_TOKEN={c['SKRToken']}")
-print(f"NEXT_PUBLIC_GOVERNANCE={c['Governance']}")
-print(f"NEXT_PUBLIC_STAKING_VAULT={c['StakingVault']}")
-print(f"NEXT_PUBLIC_CHALLENGE_REGISTRY={c['ChallengeRegistry']}")
-print(f"NEXT_PUBLIC_SORTITION={c['Sortition']}")
-print(f"NEXT_PUBLIC_ATTESTATION_STORE={c['AttestationStore']}")
-print(f"NEXT_PUBLIC_ATTESTATION_ENGINE={c['AttestationEngine']}")
-print(f"NEXT_PUBLIC_QUERY_GATEWAY={c['QueryGateway']}")
-print(f"NEXT_PUBLIC_MATH_VERIFIER={c.get('MathVerifier', '0x0000000000000000000000000000000000000000')}")
+print(f"NEXT_PUBLIC_SKR_TOKEN={c.get('SKRToken', ZERO)}")
+print(f"NEXT_PUBLIC_STAKING_VAULT={c.get('StakingVault', ZERO)}")
+print(f"NEXT_PUBLIC_CHALLENGE_REGISTRY={c.get('ChallengeRegistry', ZERO)}")
+print(f"NEXT_PUBLIC_ATTESTATION_STORE={c.get('AttestationStore', ZERO)}")
+print(f"NEXT_PUBLIC_ATTESTATION_ENGINE={c.get('AttestationEngine', ZERO)}")
+print(f"NEXT_PUBLIC_QUERY_GATEWAY={c.get('QueryGateway', ZERO)}")
+print(f"NEXT_PUBLIC_FRAUD_VERIFIER={c.get('FraudVerifier', c.get('FraudGroth16Verifier', ZERO))}")
+print(f"NEXT_PUBLIC_FRAUD_VERIFIER_ADAPTER={c.get('FraudVerifierAdapter', ZERO)}")
 PY
 
   if [ -n "$ACTIVE_ID" ]; then

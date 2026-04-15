@@ -11,29 +11,30 @@ function addr(v: string | undefined): Address {
   return v && v.startsWith('0x') ? (v as Address) : ZERO;
 }
 
+/* ── v0.2.0-no-vote — 8 canonical contracts on Base Sepolia ─────
+   Governance, Sortition, MathVerifier dropped: fraud-proof +
+   auto-finalize flow replaces the voting committee entirely. */
 export const contracts = {
-  token:             addr(process.env.NEXT_PUBLIC_SKR_TOKEN),
-  vault:             addr(process.env.NEXT_PUBLIC_STAKING_VAULT),
-  registry:          addr(process.env.NEXT_PUBLIC_CHALLENGE_REGISTRY),
-  engine:            addr(process.env.NEXT_PUBLIC_ATTESTATION_ENGINE),
-  gateway:           addr(process.env.NEXT_PUBLIC_QUERY_GATEWAY),
-  governance:        addr(process.env.NEXT_PUBLIC_GOVERNANCE),
-  sortition:         addr(process.env.NEXT_PUBLIC_SORTITION),
-  store:             addr(process.env.NEXT_PUBLIC_ATTESTATION_STORE),
-  mathVerifier:      addr(process.env.NEXT_PUBLIC_MATH_VERIFIER),
+  token:                addr(process.env.NEXT_PUBLIC_SKR_TOKEN),
+  vault:                addr(process.env.NEXT_PUBLIC_STAKING_VAULT),
+  registry:             addr(process.env.NEXT_PUBLIC_CHALLENGE_REGISTRY),
+  store:                addr(process.env.NEXT_PUBLIC_ATTESTATION_STORE),
+  engine:               addr(process.env.NEXT_PUBLIC_ATTESTATION_ENGINE),
+  gateway:              addr(process.env.NEXT_PUBLIC_QUERY_GATEWAY),
+  fraudVerifier:        addr(process.env.NEXT_PUBLIC_FRAUD_VERIFIER),
+  fraudVerifierAdapter: addr(process.env.NEXT_PUBLIC_FRAUD_VERIFIER_ADAPTER),
 } as const;
 
 export const CHAIN_ID = Number(process.env.NEXT_PUBLIC_CHAIN_ID || '84532');
 export const BASESCAN_URL = 'https://sepolia.basescan.org';
 
 export const allContracts: { name: string; key: keyof typeof contracts }[] = [
-  { name: 'SKRToken',            key: 'token' },
-  { name: 'Governance',          key: 'governance' },
-  { name: 'StakingVault',        key: 'vault' },
-  { name: 'ChallengeRegistry',   key: 'registry' },
-  { name: 'Sortition',           key: 'sortition' },
-  { name: 'AttestationStore',    key: 'store' },
-  { name: 'AttestationEngine',   key: 'engine' },
-  { name: 'QueryGateway',        key: 'gateway' },
-  { name: 'MathVerifierAdapter', key: 'mathVerifier' },
+  { name: 'SKRToken',             key: 'token' },
+  { name: 'StakingVault',         key: 'vault' },
+  { name: 'ChallengeRegistry',    key: 'registry' },
+  { name: 'AttestationStore',     key: 'store' },
+  { name: 'AttestationEngine',    key: 'engine' },
+  { name: 'QueryGateway',         key: 'gateway' },
+  { name: 'FraudVerifier',        key: 'fraudVerifier' },
+  { name: 'FraudVerifierAdapter', key: 'fraudVerifierAdapter' },
 ];
