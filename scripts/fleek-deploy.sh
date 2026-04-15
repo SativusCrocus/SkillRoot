@@ -60,10 +60,14 @@ else
 
   info "syncing app/.env.local from $DEPLOYMENT"
   APP_ENV="$APP/.env.local"
-  # Preserve the ACTIVE_CHALLENGE_ID line if it already exists
+  # Preserve the ACTIVE_CHALLENGE_ID and WC_PROJECT_ID lines if they exist.
+  # These are not produced by the deployment JSON and are set manually by the
+  # operator; the sync step must not drop them or WalletConnect breaks on live.
   ACTIVE_ID=""
+  WC_PROJECT_ID=""
   if [ -f "$APP_ENV" ]; then
     ACTIVE_ID=$(grep -E '^NEXT_PUBLIC_ACTIVE_CHALLENGE_ID=' "$APP_ENV" | tail -n1 || true)
+    WC_PROJECT_ID=$(grep -E '^NEXT_PUBLIC_WC_PROJECT_ID=' "$APP_ENV" | tail -n1 || true)
   fi
 
   python3 <<PY > "$APP_ENV"
@@ -86,6 +90,9 @@ PY
 
   if [ -n "$ACTIVE_ID" ]; then
     echo "$ACTIVE_ID" >> "$APP_ENV"
+  fi
+  if [ -n "$WC_PROJECT_ID" ]; then
+    echo "$WC_PROJECT_ID" >> "$APP_ENV"
   fi
   ok "wrote $APP_ENV"
 fi
