@@ -1,8 +1,8 @@
-# Tokenomics — SKR
+# Tokenomics — SKR (v0.2.0-no-vote)
 
 ## Supply
 
-**Fixed 100,000,000 SKR, minted once at genesis.** No `mint()` exists. Supply only decreases (via slashing burns to 0xdead).
+**Fixed 100,000,000 SKR, minted once at genesis.** No `mint()` exists. Supply only decreases (via bond-slash burns to 0xdead).
 
 ```
 INITIAL_SUPPLY = 100_000_000 ether   // 18 decimals
@@ -10,11 +10,7 @@ INITIAL_SUPPLY = 100_000_000 ether   // 18 decimals
 
 ## Distribution (v0 genesis)
 
-| Allocation | % | Notes |
-|------------|---|-------|
-| Governance treasury | 100% | entire supply sent to the `Governance` contract at deploy, managed by on-chain proposals |
-
-v0 has no investor round, no team vesting, no airdrop. The bootstrapping plan (`bootstrapping.md`) outlines how early validators earn stake via operator grants approved by governance.
+v0 has no investor round, no team vesting, no airdrop. The deployer key was burned after activating Challenge #1; there is no governance treasury pathway in this release. Early operators hold SKR through the initial distribution only.
 
 ## Staking
 
@@ -23,53 +19,47 @@ MIN_STAKE    = 1_000 SKR
 UNBOND_DELAY = 14 days
 ```
 
-Validators bond SKR to become eligible for sortition. The committee-draw probability is proportional to stake via linear stake-weighted sampling.
+In v0.2.0-no-vote staking serves one purpose: gating who may submit a fraud proof. Anyone with ≥ 1,000 SKR bonded in the vault is eligible to contest any pending claim inside its 24h window.
 
-## Slashing
+## Claim bond
 
 ```
-SLASH_LIVENESS_BPS     = 100  // 1%
-SLASH_EQUIVOCATION_BPS = 500  // 5%
+CLAIM_BOND       = 100 SKR      // posted at submitClaim
+CHALLENGE_WINDOW = 24 hours
 ```
 
-- **Liveness slash** — any committee member who fails to vote within the 24h window loses 1% of their stake.
-- **Equivocation slash** — any committee member whose vote direction disagrees with the final outcome loses 5%.
-- **Burn** — all slashed tokens go to `0xdead`. The token is deflationary under adversarial behavior.
+Every claim locks 100 SKR for 24 hours. Two outcomes:
 
-Below `MIN_STAKE`, a validator is automatically removed from the validators[] array.
+1. **No valid fraud proof** → bond returned in full at `finalizeClaim`. Attestation recorded.
+2. **Valid fraud proof inside the window** → 50 SKR to prover, 50 SKR burned to `0xdead`. Claim rejected.
 
-## Challenge bond
+The claim bond is the only economic instrument. There is no liveness slash, no equivocation slash, no committee to discipline.
+
+## Challenge proposal bond
 
 ```
 PROPOSER_BOND = 10_000 SKR
 ```
 
-Anyone can propose a new challenge by posting the bond. Governance either `activate`s (bond refunded) or `reject`s (bond burned). This keeps proposal spam costly.
+Anyone can propose a new challenge by posting the bond. After a short inactivity window anyone may permissionlessly `activate` (bond refunded) or `reject` (bond burned). This keeps proposal spam costly without requiring governance.
 
 ## Game theory
 
-### Validator incentives
+### Claimant incentives
 
-A validator decides whether to vote YES or NO on a claim. Without any direct reward (v0 has no emissions), the dominant strategy is to vote **honestly** because:
+A claimant posts 100 SKR to submit. They get it back **only if** no fraud proof lands. If they submit a valid proof, the cryptography guarantees no fraud proof can succeed — any malicious fraud-prover attempt will itself fail `IZKVerifier.verifyProof`.
 
-1. **Downside** — wrong votes forfeit 5% of stake per claim. Liveness-skipping forfeits 1%.
-2. **No upside for lying** — silent ≠ honest in v0; silent is still slashed.
-3. **Schelling-point coordination** — the honest proof either verifies or doesn't. There's no hidden information the validator needs to guess.
+Dominant strategy: only submit when the underlying proof is sound.
+
+### Fraud-prover incentives
+
+A staker observing a bogus pending claim can earn 50 SKR by posting a valid fraud proof. Fraud proofs are permissionless among stakers ≥ 1,000 SKR; the first valid one wins the entire reward.
+
+Dominant strategy: watch the mempool for invalid claims, run the fraud prover off-chain, submit when profitable.
 
 ### Attacker model
 
-For an attacker to force acceptance of a bogus claim:
-
-- They need `ceil(7 * 2/3) = 5` Byzantine validators on a 7-member committee.
-- With committee drawn stake-weighted from `n` validators, the probability of 5 colluding validators being drawn is approximately `C(n, 5) · (f/n)^5 / C(n_total, 5)` where `f` is the colluder fraction.
-- For n=50 and f=10% colluders, that's <0.001%.
-- Even if the attacker wins, each colluder loses 5% of stake on the (now-exposed) malicious vote.
-
-A higher committee size would raise the bar further but also raises gas cost per claim. 7 is the v0 compromise — reviewed for v1.
-
-### Honest validator economics
-
-v0 has no direct reward emissions. Early validator operators are grant-funded by the Governance treasury (see `bootstrapping.md`). A future fee market (paid in SKR for attestation submission) is planned for v1.
+For an attacker to force acceptance of a bogus claim, they must submit a claim whose proof verifies under the on-chain Groth16 verifier **and** survive 24 hours without any other staker producing a valid fraud proof. The first condition requires breaking Groth16 soundness (≡ breaking BN254 discrete log). The second is a liveness assumption, bounded by `FRAUD_PROVER_MIN_STAKE` (currently 1000 SKR).
 
 ## Decay
 
@@ -86,11 +76,12 @@ Rationale: security-relevant skills drift fastest; math/formal methods are more 
 
 ## What v0 does NOT have
 
-- No emissions / staking rewards (treasury grants only)
+- No emissions / staking rewards
 - No fee market
-- No delegation (validator = SKR holder; no liquid delegation)
+- No delegation
+- No committees, no on-chain votes, no governance
 - No bonding curves or AMMs
 - No cross-chain bridging
 - No liquid staking derivative
 
-All deferred to v1, documented in `ROADMAP.md`.
+All deferred; see `ROADMAP.md`.

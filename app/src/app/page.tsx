@@ -188,9 +188,9 @@ export default function Home() {
             variants={fadeUp}
             className="text-silk-dim text-base sm:text-lg max-w-2xl mx-auto leading-relaxed"
           >
-            The Bitcoin-level primitive for skill attestation. Prove knowledge
-            with zero-knowledge proofs, verified by stake-weighted committees,
-            recorded permanently on-chain.
+            A cryptographic primitive for skill attestation. Prove knowledge
+            with zero-knowledge proofs, verified on-chain,
+            recorded permanently on Base.
           </motion.p>
 
           {/* CTA buttons */}
@@ -378,7 +378,7 @@ export default function Home() {
             {
               step: '02',
               title: 'Attest',
-              desc: 'Submit your proof on-chain. A stake-weighted validator committee reviews and votes.',
+              desc: 'Submit your proof on-chain. A 24h fraud-proof window opens; bonded stakers may challenge.',
               accent: '#8b5cf6',
             },
             {

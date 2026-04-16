@@ -1,42 +1,36 @@
-# Threat Model — SkillRoot v0
+# Threat Model — SkillRoot v0.2.0-no-vote
 
 **Scope**: testnet only (Base Sepolia). This document enumerates known risks and explicitly does *not* claim production readiness.
 
 ## Disclaimer
 
-SkillRoot v0 is an unaudited prototype. Do **not** use real assets or rely on SkillRoot attestations for any high-stakes decision. The trusted setup ceremony is single-party. Governance has no timelock.
+SkillRoot v0.2.0-no-vote is an unaudited prototype. Do **not** use real assets or rely on SkillRoot attestations for any high-stakes decision. The trusted setup ceremony is single-party.
 
 ## Attack surface
 
-### 1. Sybil attacks on the validator set
+### 1. Invalid claim submission
 
-**Risk**: Attacker creates many low-stake validators to bias committee draws.
+**Risk**: A claimant submits a claim whose ZK proof does not satisfy the underlying statement.
 
-**Mitigation**: Stake-weighted sortition, not per-address. Min stake 1,000 SKR. Attacker's expected committee fraction equals their stake fraction, not their address count.
+**Mitigation**: `submitClaim` calls `IZKVerifier.verifyProof` on-chain and reverts on failure. The claim never enters the PENDING queue.
 
-**Residual risk**: At small `n` (early network), even a small capital outlay can yield outsized committee representation. Bootstrapping limits this by distributing operator grants.
+**Residual risk**: Relies on the soundness of Groth16 + BN254. If either is broken, forged proofs pass verification — unchanged from any Groth16 deployment.
 
-### 2. Committee collusion
+### 2. Sybil attacks on the fraud-prover set
 
-**Risk**: 5 out of 7 committee members collude to accept a bogus claim.
+**Risk**: Attacker creates many low-stake addresses to observe pending claims but cannot afford the 1,000 SKR minimum stake.
 
-**Mitigation**:
-- 5% equivocation slash on each wrong voter if the true outcome is later challenged
-- Committee draw is randomized per-claim, so collusion must persist across many draws
-- Real Groth16 verification at the contract layer: colluders still need to submit a mathematically valid proof, not just lie about it
+**Mitigation**: `FRAUD_PROVER_MIN_STAKE = 1_000 SKR` is checked inside `submitFraudProof`. Sub-threshold addresses cannot grief by spamming invalid fraud proofs — they are rejected at the stake check before any verifier call.
 
-**Residual risk**: If all 7 happen to be colluders and the proof itself is valid (e.g. a real but low-effort modexp), nothing stops them accepting it. Mitigation: deprecate the challenge, which doesn't invalidate past records but halts future accruals. Governance can shorten the reveal window in an emergency.
+**Residual risk**: An attacker who bonds ≥ 1,000 SKR can spam invalid fraud proofs (each reverts); this only costs them gas. The engine is not economically impacted.
 
-### 3. Committee pre-draw manipulation (blockhash grinding)
+### 3. Fraud-prover liveness failure
 
-**Risk**: A claimant-friendly actor manipulates `blockhash(submissionBlock + 4)` by controlling the sequencer.
+**Risk**: No staker monitors the mempool, and a bogus claim auto-finalizes after 24h because nobody submitted a fraud proof.
 
-**Mitigation**:
-- Base's sequencer is centralized today but blockhash manipulation would be publicly observable
-- 4-block delay is short enough that grinding on L2 is impractical for non-sequencer actors
-- Reveal window = 240 blocks (~8 min) forces a resubmit if the draw is missed, adding a retry cost
+**Mitigation**: Any bonded staker may submit a fraud proof at any point in the 24h window. 50 SKR reward per valid fraud proof plus burn of 50 SKR provides direct economic incentive to monitor.
 
-**Residual risk**: If the Base sequencer is compromised, an attacker can pre-compute committees. Mitigation is to migrate to a VRF (Chainlink, drand) before mainnet — documented in `ROADMAP.md`.
+**Residual risk**: In the bootstrap phase the staker set is small and may be offline. The mitigation is operational: multiple independent stakers run fraud-watcher daemons. Deferred: move to a SNARK-of-SNARK correctness proof that does not require liveness.
 
 ### 4. Single-party trusted setup
 
@@ -51,55 +45,44 @@ SkillRoot v0 is an unaudited prototype. Do **not** use real assets or rely on Sk
 **Risk**: The claimant binding lives at the contract layer (`keccak256(abi.encode(msg.sender, challengeId)) & MASK248`), not inside the ZK circuit. A malicious AttestationEngine upgrade could weaken it.
 
 **Mitigation**:
-- AttestationEngine is non-upgradeable in v0
-- Governance cannot change the binding formula without deploying a new Engine, which is publicly observable
-- 248-bit mask still provides 248 bits of collision resistance
+- AttestationEngine is non-upgradeable in v0 — no admin, no proxy.
+- Binding formula is applied to both claim proofs (bound to `msg.sender`) and fraud proofs (bound to the **claim's** claimant+challengeId), preserving soundness for both directions.
+- 248-bit mask still provides 248 bits of collision resistance.
 
-**Residual risk**: Future upgradeability could reintroduce this risk. v1's audit scope should include governance-controlled engine upgrades.
+**Residual risk**: Future upgradeability, if introduced, must be audited for binding preservation.
 
-### 6. Governance capture
-
-**Risk**: An attacker accumulates enough SKR to hit the 4% quorum and pass malicious proposals.
-
-**Mitigation**:
-- 5-day voting period gives time to react
-- `Deploy.s.sol` transfers all 100M SKR to the Governance contract at genesis — reducing holder concentration
-- Multi-sig control of the Governance contract during bootstrap (weeks 7–8)
-
-**Residual risk**: No timelock. A malicious proposal can execute the instant voting ends. **v1 must add a TimelockController.**
-
-### 7. Front-running submitClaim
+### 6. Front-running submitClaim
 
 **Risk**: A mempool observer copies a pending claim's proof and submits it with their own `msg.sender`, stealing the attestation.
 
-**Mitigation**: D2 binding prevents this. The proof's public signal 0 is `bindingHash(msg.sender, challengeId)`, and the contract recomputes this from the actual `msg.sender`. A copy-paste attack would fail verification.
+**Mitigation**: D2 binding prevents this. The proof's public signal 0 is `bindingHash(msg.sender, challengeId)`, and the contract recomputes this from the actual `msg.sender`. A copy-paste attack fails verification.
 
 **Residual risk**: None for this specific scenario; this is the core benefit of D2.
 
-### 8. Liveness griefing
+### 7. Claim-bond griefing
 
-**Risk**: A bonded validator stops responding, causing `finalize` to liveness-slash them repeatedly.
+**Risk**: A claimant ties up 100 SKR per submission and floods the engine with claims to inflate storage.
 
-**Mitigation**: 1% slash per missed claim caps at ~MIN_STAKE after ~100 missed claims. Validators can proactively `requestUnbond` if they need to exit.
+**Mitigation**: The bond cost (100 SKR × 24h lock-up) makes high-volume spam expensive; only valid claims are storage-accruing (invalid ones revert at `submitClaim` without state change).
 
-**Residual risk**: Minor — losing ~10 SKR per missed claim is within a reasonable operator SLA.
+**Residual risk**: Low. Spam storage cost is bounded by the bond × rate limit imposed by block gas.
 
-### 9. Decay bypass via resubmission
+### 8. Decay bypass via resubmission
 
 **Risk**: A claimant resubmits the same skill proof repeatedly to refresh the decay timestamp.
 
-**Mitigation**: Each submission is a distinct record; the UI shows all records and the aggregate decayed score. The score function sums across all records regardless of age. Resubmission *does* effectively refresh, and in v0 this is **a feature** — skills must be periodically re-attested to remain fresh.
+**Mitigation**: Each submission is a distinct record; the UI shows all records and the aggregate decayed score. Resubmission *does* effectively refresh, and in v0 this is **a feature** — skills must be periodically re-attested to remain fresh.
 
-**Residual risk**: Resubmissions are gas-cheap and claimants can farm them. v1 may add a cooldown per (claimant, challenge) pair.
+**Residual risk**: Resubmissions cost the full 100 SKR bond lock-up plus 24h wait, so farming is already gas-ceiling bounded.
 
-### 10. Slashing ambiguity: equivocation vs. correct minority
+### 9. Fraud-circuit soundness
 
-**Risk**: A committee member votes honestly NO but the majority incorrectly accepts. Their 5% slash is punishment for honesty.
+**Risk**: The fraud circuit accepts a proof that does not actually demonstrate the claim statement is false.
 
-**Mitigation**: v0 treats the majority outcome as ground truth. Validators who are confident the majority is wrong should not participate in that claim (liveness slash is 5x smaller than equivocation slash, so abstaining is the lesser evil).
+**Mitigation**: The fraud circuit is the dual of the claim circuit and uses the same Groth16 setup. Fraud proofs are bound via D2 to the exact (claimant, challengeId) they refute, preventing proof replay across claims.
 
-**Residual risk**: This is a known game-theoretic weakness. v1 should add a challenge period where slashed minorities can dispute the outcome with an appeals committee.
+**Residual risk**: A bug in the fraud circuit could allow accepting bogus fraud proofs → slashing an honest claimant. The fraud circuit must be audited alongside every new domain circuit before activation.
 
 ## Disclosures
 
-This threat model will be published alongside the v0 deployment. Any operator running `skr validate` must acknowledge it.
+This threat model is published alongside the v0.2.0-no-vote deployment. Any operator running a fraud-watcher on the testnet should read it.

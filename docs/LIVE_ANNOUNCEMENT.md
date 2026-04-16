@@ -1,4 +1,4 @@
-# SkillRoot v0 — Public Announcement (copy-paste ready)
+# SkillRoot v0.2.0-no-vote — Public Announcement (copy-paste ready)
 
 All links, addresses, and numbers below are live.
 
@@ -10,167 +10,147 @@ Post each block as a separate reply in the thread.
 
 ---
 
-**1/7**
+**1/6**
 
-SkillRoot v0 is live on Base Sepolia.
+SkillRoot v0.2.0-no-vote is live on Base Sepolia.
 
-First on-chain attestation finalized.
-
-Zero-knowledge proof of skill. Validator consensus. Time-decayed scores. No resumes.
+First on-chain attestation finalized under the new fraud-proof flow. No committee. No vote. Just a ZK proof, a 100 SKR bond, and a 24-hour window.
 
 https://app-nine-rho-70.vercel.app
 
 ---
 
-**2/7**
+**2/6**
 
 What happened:
 
 A claimant generated a Groth16 ZK proof for a modular exponentiation challenge (3^7 mod 13).
 
-The proof was verified on-chain. A 7-member committee was drawn via stake-weighted sortition. Validators voted. Consensus reached. Attestation recorded permanently.
+The proof was verified on-chain by a Solidity verifier. 100 SKR was locked as a claim bond. A 24-hour fraud window opened. No staker submitted a valid fraud proof. The attestation auto-finalized.
 
 ---
 
-**3/7**
+**3/6**
 
 The primitive:
 
-- Submit a ZK proof that you solved a domain-specific challenge
-- On-chain verifier checks it cryptographically
-- Sortition draws a validator committee from staked participants
-- Committee votes (66.66% quorum)
-- Accepted attestations are stored with time-decaying scores
+- Submit a ZK proof for a domain-specific challenge, post a 100 SKR bond
+- On-chain verifier checks the proof cryptographically
+- 24h fraud-proof window: any staker with ≥ 1,000 SKR can refute with a valid fraud proof (→ 50 SKR reward, 50 SKR burned)
+- If the window closes with no successful fraud proof, the claim is accepted and the bond returned
+
+No committee. No vote. No governance.
 
 ---
 
-**4/7**
+**4/6**
 
 What's on-chain right now (Base Sepolia):
 
-- 9 contracts deployed
-- 5 validators bonded (5,000 SKR each)
+- 8 canonical contracts deployed
 - 1 active challenge (APPLIED_MATH)
-- 1 finalized attestation
+- First fraud-proof-flow attestation finalized
 - Scores queryable via QueryGateway
 
-Engine: https://sepolia.basescan.org/address/0x86b5A121568829981593e5Be2D597dFb99DC7E49
+Engine: https://sepolia.basescan.org/address/0xF2541F68f47f5aB978979B5Ab766f08750d915e8
 
 ---
 
-**5/7**
+**5/6**
 
 Skill scores decay over time:
 
 - Algorithmic: 2-year half-life
 - Formal verification: 3-year half-life
 - Applied math: 3-year half-life
-- Security/code: 1-year half-life
+- Security / code: 1-year half-life
 
 Your score isn't a badge. It's a signal that degrades unless you keep proving.
 
 ---
 
-**6/7**
+**6/6**
 
-What's next:
+Fraud-provers wanted. 1,000 SKR stake. Watch claims, submit a fraud proof if you see an invalid one, earn 50 SKR per win.
 
-- 3 new challenge domains (algo, formal verification, secure code)
-- VRF-based sortition (replacing blockhash entropy)
-- Governance timelock
-- Multi-party trusted setup ceremony
-- Mainnet
-
-Roadmap: https://github.com/SativusCrocus/SkillRoot
-
----
-
-**7/7**
-
-Validators needed. 5,000 SKR stake. Run a daemon. Earn yield. Get slashed if you sleep.
-
-Validator guide: https://github.com/SativusCrocus/SkillRoot/blob/main/docs/VALIDATOR_ONBOARDING.md
+Guide: https://github.com/SativusCrocus/SkillRoot/blob/main/docs/VALIDATOR_ONBOARDING.md
 
 App: https://app-nine-rho-70.vercel.app
 
 ---
 
-## Discord Announcement
+## Discord / Farcaster Announcement
 
-Post in `#announcements`:
+**SkillRoot v0.2.0-no-vote — Live on Base Sepolia**
 
----
-
-**SkillRoot v0 — Live on Base Sepolia**
-
-The first on-chain skill attestation has been finalized.
+The first on-chain skill attestation under the fraud-proof flow has been finalized.
 
 **What shipped:**
-- 9 smart contracts on Base Sepolia (chain 84532)
+- 8 canonical smart contracts on Base Sepolia (chain 84532)
 - Groth16 ZK proof verification for modular exponentiation
-- Stake-weighted sortition committee (7 members per claim)
-- 5 bonded validators, first committee drawn and voted
+- 24-hour fraud-proof window replacing the validator committee
+- Paired fraud circuit + adapter for permissionless refutation
 - Time-decayed attestation scores (queryable via CLI and frontend)
 - 3D glassmorphism frontend on Vercel
 
 **Links:**
 - App: https://app-nine-rho-70.vercel.app
-- AttestationEngine: https://sepolia.basescan.org/address/0x86b5A121568829981593e5Be2D597dFb99DC7E49
-- First attestation tx: https://sepolia.basescan.org/tx/0xb82542808aeadcd29b05a1f41c6a0148566c786dc392a874d666f91ed9acd7eb
+- AttestationEngine: https://sepolia.basescan.org/address/0xF2541F68f47f5aB978979B5Ab766f08750d915e8
+- First attestation tx: https://sepolia.basescan.org/tx/0xb6b7d1bd60871bfccd1b3a4f4d0fcb24f7af1beaf2903d0f3391f68c481835a9
 - Repo: https://github.com/SativusCrocus/SkillRoot
 
-**Want to validate?**
+**Want to run a fraud-prover?**
 Follow the onboarding guide: https://github.com/SativusCrocus/SkillRoot/blob/main/docs/VALIDATOR_ONBOARDING.md
 
-Requirements: 5,000 SKR stake, Node 20+, Foundry. Send your address in `#validators` to get funded.
+Requirements: 1,000 SKR stake, Node 20+, Foundry.
 
 ---
 
 ## GitHub Release
 
-**Tag:** `v0.1.0-testnet`
-**Title:** `v0.1.0 — First Live Attestation on Base Sepolia`
+**Tag:** `v0.2.0-no-vote`
+**Title:** `v0.2.0 — Fraud-Proof Flow Live on Base Sepolia`
 
 ---
 
 **Body:**
 
-## SkillRoot v0.1.0 — First Live Attestation
+## SkillRoot v0.2.0-no-vote
 
-The SkillRoot primitive is live on Base Sepolia with its first finalized on-chain attestation.
+Dropped the validator committee. Replaced the 24h voting window with a 24h fraud-proof window. Shrank the contract set from 10 to 8.
 
 ### Deployed Contracts (Base Sepolia, chain 84532)
 
 | Contract | Address |
 |----------|---------|
-| SKRToken | [`0xbd8Fe0fE752A1B0135DDdD99357De060e2C92392`](https://sepolia.basescan.org/address/0xbd8Fe0fE752A1B0135DDdD99357De060e2C92392) |
-| Governance | [`0x0Bd5D8Cb003EE175D19B29F8B50E99d5959eABDE`](https://sepolia.basescan.org/address/0x0Bd5D8Cb003EE175D19B29F8B50E99d5959eABDE) |
-| StakingVault | [`0x0aD5A748965895709a0D68E3e669dCB97a6B43C1`](https://sepolia.basescan.org/address/0x0aD5A748965895709a0D68E3e669dCB97a6B43C1) |
-| ChallengeRegistry | [`0x7585959e8f0B5C17D40ff0Cd2564417E50135c78`](https://sepolia.basescan.org/address/0x7585959e8f0B5C17D40ff0Cd2564417E50135c78) |
-| Sortition | [`0x7022D0326E296F78664F4506e42D39aD0bd188D6`](https://sepolia.basescan.org/address/0x7022D0326E296F78664F4506e42D39aD0bd188D6) |
-| AttestationStore | [`0x013D4edC39B9b594dD809139b283Eb6ef313c8AA`](https://sepolia.basescan.org/address/0x013D4edC39B9b594dD809139b283Eb6ef313c8AA) |
-| AttestationEngine | [`0x86b5A121568829981593e5Be2D597dFb99DC7E49`](https://sepolia.basescan.org/address/0x86b5A121568829981593e5Be2D597dFb99DC7E49) |
-| QueryGateway | [`0xFb648E415BAbBbFBf882Cc64a02cBc5DAFAB0D14`](https://sepolia.basescan.org/address/0xFb648E415BAbBbFBf882Cc64a02cBc5DAFAB0D14) |
-| MathGroth16Verifier | [`0x39041f0DB8E566c72D407d81F67B931560B30619`](https://sepolia.basescan.org/address/0x39041f0DB8E566c72D407d81F67B931560B30619) |
-| MathVerifierAdapter | [`0x0984eC92acf7AA83454c26862ef25856Df862Edd`](https://sepolia.basescan.org/address/0x0984eC92acf7AA83454c26862ef25856Df862Edd) |
+| SKRToken              | [`0xebEB1dAC3F774b47e28844D1493758838D8463B2`](https://sepolia.basescan.org/address/0xebEB1dAC3F774b47e28844D1493758838D8463B2) |
+| StakingVault          | [`0x8CCdc62e5762f89d0D17fc5e55Ae3555c207Ad6b`](https://sepolia.basescan.org/address/0x8CCdc62e5762f89d0D17fc5e55Ae3555c207Ad6b) |
+| AttestationStore      | [`0x3b6a969DCAD3d79164dA2AD75c2191350BF536a8`](https://sepolia.basescan.org/address/0x3b6a969DCAD3d79164dA2AD75c2191350BF536a8) |
+| ChallengeRegistry     | [`0xbD13B7822bBc4cC6C0C53CA08497643C6085294B`](https://sepolia.basescan.org/address/0xbD13B7822bBc4cC6C0C53CA08497643C6085294B) |
+| AttestationEngine     | [`0xF2541F68f47f5aB978979B5Ab766f08750d915e8`](https://sepolia.basescan.org/address/0xF2541F68f47f5aB978979B5Ab766f08750d915e8) |
+| QueryGateway          | [`0xe4A4c37B59F29807840b1DB22C45C66dcB5D01A2`](https://sepolia.basescan.org/address/0xe4A4c37B59F29807840b1DB22C45C66dcB5D01A2) |
+| MathGroth16Verifier   | [`0x8176831054075DaF6B26783491a04D3C14eFD41b`](https://sepolia.basescan.org/address/0x8176831054075DaF6B26783491a04D3C14eFD41b) |
+| MathVerifierAdapter   | [`0xde605f7BA61030916136f079731260B76bE8074C`](https://sepolia.basescan.org/address/0xde605f7BA61030916136f079731260B76bE8074C) |
+| FraudGroth16Verifier  | [`0x1E39641eaf3930d19F8619184aE10b4f38a5a5bB`](https://sepolia.basescan.org/address/0x1E39641eaf3930d19F8619184aE10b4f38a5a5bB) |
+| FraudVerifierAdapter  | [`0x173241d25feb42EA8D9D3D4c767788c6F23C62A7`](https://sepolia.basescan.org/address/0x173241d25feb42EA8D9D3D4c767788c6F23C62A7) |
 
 ### What's in this release
 
-- **ZK attestation pipeline** — Circom 2 circuit for modular exponentiation, Groth16 proofs verified on-chain via snarkjs-generated verifier
-- **Validator consensus** — stake-weighted sortition draws 7-member committees, 66.66% quorum, liveness + equivocation slashing
-- **Time-decayed scores** — domain-specific half-lives (1-3 years), queryable via `QueryGateway.verify()`
-- **CLI** — `skr solve`, `skr submit`, `skr stake`, `skr validate` (daemon), `skr query`, `skr challenges`
+- **ZK attestation pipeline** — Circom 2 claim circuit + paired fraud circuit for modular exponentiation
+- **Fraud-proof flow** — 24h window, permissionless challenge by any ≥ 1,000 SKR staker, 50/50 bond split on successful refutation
+- **Auto-finalize** — any caller can finalize an unchallenged claim after the window; bond returns to claimant
+- **Time-decayed scores** — domain-specific half-lives (1–3 years), queryable via `QueryGateway.verify()`
+- **CLI** — `skr solve`, `skr submit`, `skr dispute`, `skr stake`, `skr query`, `skr challenges`
 - **Frontend** — 3D silk glassmorphism UI (Three.js + R3F), wallet connect via RainbowKit, live at https://app-nine-rho-70.vercel.app
-- **ForgeGuard** — permissionless security challenge layer with mirage lifecycle
-- **Tokenomics** — 100M fixed supply SKR (ERC20Votes), deflationary via slash burns
+- **Tokenomics** — 100M fixed supply SKR, deflationary via claim-bond burns on successful fraud proofs
 
-### First attestation
+### First attestation (v0.2.0-no-vote)
 
 - **Challenge:** APPLIED_MATH #1 (modular exponentiation)
 - **Proof:** `3^7 mod 13 = 3` (Groth16, BN254)
-- **Validators:** 5 bonded, committee of 7 drawn via Sortition
+- **Flow:** submitClaim (100 SKR bond) → 24h window → finalizeClaim
 - **Result:** FINALIZED_ACCEPT
-- **Tx:** [`0xb82542808aeadcd29b05a1f41c6a0148566c786dc392a874d666f91ed9acd7eb`](https://sepolia.basescan.org/tx/0xb82542808aeadcd29b05a1f41c6a0148566c786dc392a874d666f91ed9acd7eb)
+- **Tx:** [`0xb6b7d1bd60871bfccd1b3a4f4d0fcb24f7af1beaf2903d0f3391f68c481835a9`](https://sepolia.basescan.org/tx/0xb6b7d1bd60871bfccd1b3a4f4d0fcb24f7af1beaf2903d0f3391f68c481835a9)
 
 ### Run it yourself
 
@@ -180,32 +160,24 @@ cd SkillRoot
 pnpm install
 ./scripts/setup.sh           # install toolchain
 ./scripts/build-circuits.sh  # compile circuits
-pnpm run e2e                 # full local flow on anvil
 ```
-
-### Validate
-
-See [VALIDATOR_ONBOARDING.md](docs/VALIDATOR_ONBOARDING.md) for the 5-step guide.
 
 ### Known limitations (v0)
 
-- Blockhash entropy for sortition (v1 switches to VRF)
-- No governance timelock (v1)
-- Single-party trusted setup (v1 requires multi-party ceremony)
-- 1 challenge domain active (3 more in v1)
+- Single-party trusted setup (v1 requires multi-party ceremony for both claim and fraud circuits)
+- 1 claim-circuit domain active (3 more in v1, each with a paired fraud circuit)
+- Fraud-watcher liveness: relies on at least one bonded staker monitoring claims
 
 ---
 
 ## Release Commands
 
 ```bash
-# Tag and push
-git tag -a v0.1.0-testnet -m "v0.1.0 — First Live Attestation on Base Sepolia"
-git push origin v0.1.0-testnet
+git tag -a v0.2.0-no-vote -m "v0.2.0 — Fraud-Proof Flow Live on Base Sepolia"
+git push origin v0.2.0-no-vote
 
-# Create GitHub release (requires gh CLI)
-gh release create v0.1.0-testnet \
-  --title "v0.1.0 — First Live Attestation on Base Sepolia" \
+gh release create v0.2.0-no-vote \
+  --title "v0.2.0 — Fraud-Proof Flow Live on Base Sepolia" \
   --notes-file docs/LIVE_ANNOUNCEMENT.md \
   --prerelease
 ```

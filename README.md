@@ -5,12 +5,13 @@
 <h1 align="center">SkillRoot</h1>
 
 <p align="center">
-  <strong>The Bitcoin-level primitive for human capability signaling.</strong>
+  <strong>A cryptographic primitive for human capability signaling.</strong>
 </p>
 
 <p align="center">
   <a href="https://app-nine-rho-70.vercel.app"><img src="https://img.shields.io/badge/testnet-live-22d3ee?style=flat-square" alt="Testnet Live" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-8b5cf6?style=flat-square" alt="MIT License" /></a>
+  <img src="https://img.shields.io/badge/version-v0.2.0--no--vote-6366f1?style=flat-square" alt="v0.2.0-no-vote" />
   <img src="https://img.shields.io/badge/solidity-0.8.24-6366f1?style=flat-square" alt="Solidity 0.8.24" />
   <img src="https://img.shields.io/badge/circom-2-22d3ee?style=flat-square" alt="Circom 2" />
   <img src="https://img.shields.io/badge/chain-Base%20Sepolia-a78bfa?style=flat-square" alt="Base Sepolia" />
@@ -18,7 +19,7 @@
 </p>
 
 <p align="center">
-  Prove a skill with zero-knowledge proofs. A stake-weighted validator committee attests. The result is a permanent, decayed on-chain skill score readable by any dApp &mdash; no credentials, no gatekeepers, no universities.
+  Prove a skill with zero-knowledge proofs. A 24-hour fraud-proof window lets any bonded staker challenge the claim; absent a valid fraud proof, the claim auto-finalizes into a permanent, decayed on-chain skill score readable by any dApp &mdash; no credentials, no gatekeepers, no universities.
 </p>
 
 ---
@@ -68,16 +69,17 @@ Claimant                  Protocol                    Readers
   │  1. solve challenge    ┌──────────────────┐
   │  ──────────────────►   │ Groth16 ZK Proof │
   │                        └────────┬─────────┘
-  │  2. submit on-chain             │
+  │  2. submit + bond               │
   │  ──────────────────►   ┌────────▼─────────┐
   │                        │ AttestationEngine │
   │                        │  verify proof     │
-  │                        │  draw committee   │
+  │                        │  lock 100 SKR     │
   │                        └────────┬─────────┘
   │                                 │
   │                        ┌────────▼─────────┐
-  │                        │  Validator Vote   │
-  │                        │  (7-member jury)  │
+  │                        │  24h Fraud Window │
+  │                        │  bonded stakers   │
+  │                        │  may submit proof │
   │                        └────────┬─────────┘
   │                                 │
   │                        ┌────────▼─────────┐
@@ -86,68 +88,71 @@ Claimant                  Protocol                    Readers
   │                        └──────────────────┘──────►  protocols
 ```
 
+If a valid fraud proof lands inside the 24h window, the claim is rejected, half the claimant's bond rewards the prover, half is burned. If the window closes with no successful fraud proof, anyone may finalize and the bond is returned to the claimant.
+
 ## Architecture
+
+v0.2.0-no-vote ships **8 canonical contracts**. Governance, Sortition, MathVerifier, and ForgeGuard from the earlier draft have been removed — the fraud-proof + auto-finalize flow replaces the committee entirely.
 
 | Layer | Component | What It Does |
 |-------|-----------|-------------|
-| **Token** | `SKRToken.sol` | Fixed 100M ERC20Votes supply. No inflation. Slashing burns to `0xdead`. |
-| **Staking** | `StakingVault.sol` | Bond/unbond/slash. 1000 SKR minimum. 14-day unbond delay. Dense validator array for sortition. |
-| **Challenges** | `ChallengeRegistry.sol` | Propose/activate/deprecate skill challenges. 10k SKR proposer bond. |
-| **Selection** | `Sortition.sol` | Stake-weighted 7-member committee draw. `blockhash(n+4)` entropy. 240-block reveal window. |
-| **Engine** | `AttestationEngine.sol` | Orchestrator: verify proof, draw committee, collect votes, finalize. D2 on-chain binding. |
+| **Token** | `SKRToken.sol` | Fixed 100M ERC20 supply (ERC20Votes base kept for future governance). No inflation. Slashing burns to `0xdead`. |
+| **Staking** | `StakingVault.sol` | Bond / unbond / slash. 1000 SKR minimum. 14-day unbond delay. Gates who may submit fraud proofs. |
+| **Challenges** | `ChallengeRegistry.sol` | Bonded proposal + permissionless rejection / activation after an inactivity window. No governance vote. |
+| **Engine** | `AttestationEngine.sol` | `submitClaim` → 24h fraud window → `submitFraudProof` **or** `finalizeClaim`. D2 on-chain binding. |
 | **Storage** | `AttestationStore.sol` | Permanent attestation records with time-decayed score computation. |
 | **Gateway** | `QueryGateway.sol` | Single `verify(address)` returns `uint256[4]` domain scores for any reader. |
-| **Governance** | `Governance.sol` | On-chain proposal/vote/execute. Governs challenge activation, parameter changes, treasury. |
-| **Security** | `ForgeGuard.sol` | Permissionless forge challenges + mirage break/survive lifecycle. |
-| **ZK Circuit** | `math.circom` | Groth16 modular exponentiation circuit. Proves knowledge of `(base, exp)` satisfying `base^exp mod N = result`. |
-| **Frontend** | Next.js 14 + Three.js | 3D silk glassmorphism dApp. Three.js skill graph, glass panels, particle systems. Static export. |
-| **CLI** | `skr` | TypeScript CLI: `solve` (generate proof), `validate` (run validator daemon), `status` (check scores). |
+| **Claim ZK** | `math.circom` + `MathGroth16Verifier` | Proves knowledge of `(base, exp)` satisfying `base^exp mod N = result`. |
+| **Fraud ZK** | `fraud.circom` + `FraudGroth16Verifier` + `FraudVerifierAdapter` | Groth16 fraud circuit; adapter wires the raw verifier to the engine's `IZKVerifier` interface. |
+| **Frontend** | Next.js 14 + Three.js | 3D silk glassmorphism dApp. Static export. |
+| **CLI** | `skr` | TypeScript CLI: `solve`, `submit`, `dispute`, `query`, `stake`, `challenges`. |
 
 ## Monorepo Layout
 
 ```
 contracts/    Foundry / Solidity 0.8.24 smart contracts
-circuits/     Circom 2 + snarkjs Groth16 circuits
+circuits/     Circom 2 + snarkjs Groth16 circuits (math + fraud)
 app/          Next.js 14 + Three.js + R3F — 3D silk glassmorphism frontend (static export)
-cli/          TypeScript CLI (skr) with integrated validator daemon
+cli/          TypeScript CLI (skr)
 docs/         Architecture, contracts, circuits, tokenomics, threat model, roadmap
-scripts/      Automation (setup, build, ceremony, deploy, e2e)
+scripts/      Automation (setup, build, deploy, verify)
 ```
 
-## Base Sepolia Deployment
+## Base Sepolia Deployment (v0.2.0-no-vote)
 
 All contracts are live on **Base Sepolia** (chain 84532). Frontend: [app-nine-rho-70.vercel.app](https://app-nine-rho-70.vercel.app)
 
 | Contract | Address |
 |----------|---------|
-| SKRToken | [`0xbd8Fe0fE752A1B0135DDdD99357De060e2C92392`](https://sepolia.basescan.org/address/0xbd8Fe0fE752A1B0135DDdD99357De060e2C92392) |
-| Governance | [`0x0Bd5D8Cb003EE175D19B29F8B50E99d5959eABDE`](https://sepolia.basescan.org/address/0x0Bd5D8Cb003EE175D19B29F8B50E99d5959eABDE) |
-| StakingVault | [`0x0aD5A748965895709a0D68E3e669dCB97a6B43C1`](https://sepolia.basescan.org/address/0x0aD5A748965895709a0D68E3e669dCB97a6B43C1) |
-| ChallengeRegistry | [`0x7585959e8f0B5C17D40ff0Cd2564417E50135c78`](https://sepolia.basescan.org/address/0x7585959e8f0B5C17D40ff0Cd2564417E50135c78) |
-| Sortition | [`0x7022D0326E296F78664F4506e42D39aD0bd188D6`](https://sepolia.basescan.org/address/0x7022D0326E296F78664F4506e42D39aD0bd188D6) |
-| AttestationStore | [`0x013D4edC39B9b594dD809139b283Eb6ef313c8AA`](https://sepolia.basescan.org/address/0x013D4edC39B9b594dD809139b283Eb6ef313c8AA) |
-| AttestationEngine | [`0x86b5A121568829981593e5Be2D597dFb99DC7E49`](https://sepolia.basescan.org/address/0x86b5A121568829981593e5Be2D597dFb99DC7E49) |
-| QueryGateway | [`0xFb648E415BAbBbFBf882Cc64a02cBc5DAFAB0D14`](https://sepolia.basescan.org/address/0xFb648E415BAbBbFBf882Cc64a02cBc5DAFAB0D14) |
-| MathGroth16Verifier | [`0x39041f0DB8E566c72D407d81F67B931560B30619`](https://sepolia.basescan.org/address/0x39041f0DB8E566c72D407d81F67B931560B30619) |
-| MathVerifierAdapter | [`0x0984eC92acf7AA83454c26862ef25856Df862Edd`](https://sepolia.basescan.org/address/0x0984eC92acf7AA83454c26862ef25856Df862Edd) |
+| SKRToken              | [`0xebEB1dAC3F774b47e28844D1493758838D8463B2`](https://sepolia.basescan.org/address/0xebEB1dAC3F774b47e28844D1493758838D8463B2) |
+| StakingVault          | [`0x8CCdc62e5762f89d0D17fc5e55Ae3555c207Ad6b`](https://sepolia.basescan.org/address/0x8CCdc62e5762f89d0D17fc5e55Ae3555c207Ad6b) |
+| AttestationStore      | [`0x3b6a969DCAD3d79164dA2AD75c2191350BF536a8`](https://sepolia.basescan.org/address/0x3b6a969DCAD3d79164dA2AD75c2191350BF536a8) |
+| ChallengeRegistry     | [`0xbD13B7822bBc4cC6C0C53CA08497643C6085294B`](https://sepolia.basescan.org/address/0xbD13B7822bBc4cC6C0C53CA08497643C6085294B) |
+| AttestationEngine     | [`0xF2541F68f47f5aB978979B5Ab766f08750d915e8`](https://sepolia.basescan.org/address/0xF2541F68f47f5aB978979B5Ab766f08750d915e8) |
+| QueryGateway          | [`0xe4A4c37B59F29807840b1DB22C45C66dcB5D01A2`](https://sepolia.basescan.org/address/0xe4A4c37B59F29807840b1DB22C45C66dcB5D01A2) |
+| MathGroth16Verifier   | [`0x8176831054075DaF6B26783491a04D3C14eFD41b`](https://sepolia.basescan.org/address/0x8176831054075DaF6B26783491a04D3C14eFD41b) |
+| MathVerifierAdapter   | [`0xde605f7BA61030916136f079731260B76bE8074C`](https://sepolia.basescan.org/address/0xde605f7BA61030916136f079731260B76bE8074C) |
+| FraudGroth16Verifier  | [`0x1E39641eaf3930d19F8619184aE10b4f38a5a5bB`](https://sepolia.basescan.org/address/0x1E39641eaf3930d19F8619184aE10b4f38a5a5bB) |
+| FraudVerifierAdapter  | [`0x173241d25feb42EA8D9D3D4c767788c6F23C62A7`](https://sepolia.basescan.org/address/0x173241d25feb42EA8D9D3D4c767788c6F23C62A7) |
 
-Challenge #1 (APPLIED_MATH &mdash; modular exponentiation) is **ACTIVE**.
+Deployer `0x709a38C670f15E0E1763A7F42F616526F4e62118` — genesis key burned after deployment. Challenge #1 (APPLIED_MATH &mdash; modular exponentiation) is **ACTIVE**. Full manifest: [`deployments/base-sepolia.json`](deployments/base-sepolia.json).
 
-### First live attestation
+### First live attestation (v0.2.0-no-vote)
 
-Claim #1 finalized on Base Sepolia with a 5-validator committee voting unanimously YES:
+The first on-chain claim under the fraud-proof flow:
 
 | Field | Value |
 |-------|-------|
 | Challenge | APPLIED_MATH #1 — `3^7 mod 13 = 3` |
-| Validators bonded | 5 × 5,000 SKR = 25,000 SKR |
-| Committee | 5 members drawn via stake-weighted Sortition |
-| Vote | 5 YES / 0 NO (unanimous, above 66.66% quorum) |
+| Proof | Groth16, verified on-chain by `MathGroth16Verifier` |
+| Bond | 100 SKR locked at `submitClaim`, returned on auto-finalize |
+| Fraud window | 24h — closed with no challenge |
+| Submission tx | [`0xb6b7d1bd60871bfccd1b3a4f4d0fcb24f7af1beaf2903d0f3391f68c481835a9`](https://sepolia.basescan.org/tx/0xb6b7d1bd60871bfccd1b3a4f4d0fcb24f7af1beaf2903d0f3391f68c481835a9) |
+| Block | 40292380 |
 | Status | `FINALIZED_ACCEPT` |
-| Finalize tx | [`0xb82542...9acd7eb`](https://sepolia.basescan.org/tx/0xb82542808aeadcd29b05a1f41c6a0148566c786dc392a874d666f91ed9acd7eb) |
 | Proof artifacts | [`proofs/input-1.json`](proofs/input-1.json), [`proofs/calldata-1.json`](proofs/calldata-1.json) |
 
-Reproduce with `./scripts/bootstrap-first-attestation.sh` (full automated bootstrap) or verify with `./scripts/bootstrap-verify.sh` (8 post-bootstrap checks). See [`docs/TESTNET_FIRST_ATTESTATION.md`](docs/TESTNET_FIRST_ATTESTATION.md) for the manual walkthrough and [`docs/VALIDATOR_ONBOARDING.md`](docs/VALIDATOR_ONBOARDING.md) for running your own validator.
+Reproduce end-to-end with the CLI: `skr solve` → `skr submit` → wait 24h → `skr finalize`. See [`docs/TESTNET_FIRST_ATTESTATION.md`](docs/TESTNET_FIRST_ATTESTATION.md) for the manual walkthrough and [`docs/first-attestation.md`](docs/first-attestation.md) for the attestation receipt.
 
 ## Quickstart
 
@@ -160,15 +165,12 @@ pnpm install                # workspace dependencies (includes three.js / R3F)
 
 # 2. Build everything
 forge build --root contracts
-./scripts/build-circuits.sh  # math circuit → MathVerifier.sol
+./scripts/build-circuits.sh  # math + fraud circuits → verifier contracts
 
 # 3. Test
 forge test --root contracts -vvv
 
-# 4. Run the full lifecycle on local testnet
-./scripts/anvil-e2e.sh
-
-# 5. Start the 3D frontend
+# 4. Start the 3D frontend
 pnpm dev                    # → http://localhost:3000
 ```
 
@@ -183,28 +185,26 @@ v0 ships one active circuit. The contract layer supports four domain slots:
 | `FORMAL_VER` | &mdash; | SAT instance satisfies committed CNF formula | v1 |
 | `SEC_CODE` | &mdash; | Vulnerability pattern detection in committed bytecode | v1 |
 
-## Tokenomics
+## Economics
 
 | Parameter | Value |
 |-----------|-------|
-| Total supply | 100,000,000 SKR (fixed, deflationary) |
-| Minimum stake | 1,000 SKR |
-| Unbond delay | 14 days |
-| Committee size | 7 validators |
-| Liveness slash | 1% of stake |
-| Equivocation slash | 5% of stake |
-| Proposer bond | 10,000 SKR |
+| Total supply        | 100,000,000 SKR (fixed, deflationary) |
+| Claim bond          | 100 SKR (locked at submit, returned on auto-finalize) |
+| Fraud-prove reward  | 50% of claimant bond; remaining 50% burned |
+| Minimum stake       | 1,000 SKR (required to submit a fraud proof) |
+| Unbond delay        | 14 days |
+| Fraud window        | 24 hours |
 
-100% of genesis supply goes to the `Governance` contract. No investor round, no team vesting, no airdrop. Early validators earn stake through governance-approved operator grants.
+No emissions, no inflation, no investor round, no team vesting, no airdrop. Every rejected claim permanently burns half the bond, so the supply is strictly monotone-decreasing under adversarial behaviour.
 
 ## Design Invariants
 
-- Exactly one ZK circuit in v0 &mdash; modular exponentiation
+- Exactly one active ZK claim circuit in v0 &mdash; modular exponentiation
 - Fixed 100M SKR supply, no inflation
-- Contract-side claimant binding: `keccak256(abi.encode(msg.sender, challengeId))`
+- Contract-side claimant binding: `bindingHash = keccak256(abi.encode(msg.sender, challengeId)) & (2^248 - 1)`, prepended as public signal 0 for both claim and fraud proofs
 - Next.js static export only (IPFS-compatible)
-- Validator daemon folded into `skr validate` &mdash; no separate daemon package
-- All slashed tokens burned (deflationary under adversarial behavior)
+- No committees, no on-chain voting, no governance execution path in v0
 
 ## Frontend Stack
 
@@ -226,14 +226,11 @@ v0 ships one active circuit. The contract layer supports four domain slots:
 | [`docs/architecture.md`](docs/architecture.md) | System topology, component roles, data flow |
 | [`docs/contracts.md`](docs/contracts.md) | Contract API reference, storage layout, access control |
 | [`docs/circuits.md`](docs/circuits.md) | Circuit constraints, trusted setup, verification |
-| [`docs/tokenomics.md`](docs/tokenomics.md) | Supply, staking, slashing, distribution |
+| [`docs/tokenomics.md`](docs/tokenomics.md) | Supply, bonds, fraud-proof economics |
 | [`docs/threat-model.md`](docs/threat-model.md) | Attack surface analysis, risk registry |
-| [`docs/bootstrapping.md`](docs/bootstrapping.md) | 8-week launch plan, operator onboarding |
 | [`docs/ROADMAP.md`](docs/ROADMAP.md) | v1 scope, P0/P1 priorities, research track |
-| [`docs/VALIDATOR-OPERATOR.md`](docs/VALIDATOR-OPERATOR.md) | Validator setup and operations guide (reference) |
-| [`docs/VALIDATOR_ONBOARDING.md`](docs/VALIDATOR_ONBOARDING.md) | 5-step copy-paste onboarding for new testnet validators |
 | [`docs/TESTNET_FIRST_ATTESTATION.md`](docs/TESTNET_FIRST_ATTESTATION.md) | First live attestation: record + manual walkthrough |
-| [`docs/LIVE_ANNOUNCEMENT.md`](docs/LIVE_ANNOUNCEMENT.md) | v0 launch announcement (X thread, Discord, release body) |
+| [`docs/first-attestation.md`](docs/first-attestation.md) | v0.2.0-no-vote attestation receipt |
 
 ## Security
 
@@ -241,8 +238,8 @@ v0 ships one active circuit. The contract layer supports four domain slots:
 
 Known limitations documented in [`docs/threat-model.md`](docs/threat-model.md):
 - Single-party phase 2 trusted setup (v1 requires multi-party ceremony)
-- `blockhash` entropy vulnerable to sequencer grinding (v1 switches to VRF)
-- No timelock on governance execution (v1 adds TimelockController)
+- No timelock: no governance pathway exists in v0, but adding one later will require a TimelockController
+- Fraud-proof circuit covers only the modexp domain; additional domains require paired fraud circuits
 
 ## Contributing
 

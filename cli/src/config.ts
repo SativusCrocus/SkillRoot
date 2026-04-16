@@ -20,7 +20,9 @@ export interface Config {
     registry: Address;
     engine: Address;
     gateway: Address;
-    governance: Address;
+    store?: Address;
+    fraudVerifier?: Address;
+    fraudVerifierAdapter?: Address;
   };
 }
 
@@ -52,7 +54,6 @@ export function loadConfig(): Config {
     registry: '0x0000000000000000000000000000000000000000' as Address,
     engine: '0x0000000000000000000000000000000000000000' as Address,
     gateway: '0x0000000000000000000000000000000000000000' as Address,
-    governance: '0x0000000000000000000000000000000000000000' as Address,
   };
 
   return { chainId, rpcUrl, contracts };

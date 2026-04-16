@@ -1,5 +1,5 @@
-// Minimal ABIs for CLI. Kept in sync with app/src/lib/abis.ts
-// but also includes a few extra methods (events, finalize, etc.)
+// Minimal ABIs for CLI. Kept in sync with app/src/lib/abis.ts.
+// v0.2.0-no-vote: fraud-proof + auto-finalize flow (no committees, no voting).
 
 export const skrTokenAbi = [
   {
@@ -86,6 +86,26 @@ export const attestationEngineAbi = [
   },
   {
     type: 'function',
+    name: 'submitFraudProof',
+    stateMutability: 'nonpayable',
+    inputs: [
+      { name: 'claimId', type: 'uint256' },
+      { name: 'a', type: 'uint256[2]' },
+      { name: 'b', type: 'uint256[2][2]' },
+      { name: 'c', type: 'uint256[2]' },
+      { name: 'fraudSignals', type: 'uint256[]' },
+    ],
+    outputs: [],
+  },
+  {
+    type: 'function',
+    name: 'finalizeClaim',
+    stateMutability: 'nonpayable',
+    inputs: [{ name: 'claimId', type: 'uint256' }],
+    outputs: [],
+  },
+  {
+    type: 'function',
     name: 'bindingHashOf',
     stateMutability: 'pure',
     inputs: [
@@ -93,40 +113,6 @@ export const attestationEngineAbi = [
       { name: 'challengeId', type: 'uint256' },
     ],
     outputs: [{ type: 'uint256' }],
-  },
-  {
-    type: 'function',
-    name: 'drawCommittee',
-    stateMutability: 'nonpayable',
-    inputs: [{ name: 'claimId', type: 'uint256' }],
-    outputs: [],
-  },
-  {
-    type: 'function',
-    name: 'vote',
-    stateMutability: 'nonpayable',
-    inputs: [
-      { name: 'claimId', type: 'uint256' },
-      { name: 'yes', type: 'bool' },
-    ],
-    outputs: [],
-  },
-  {
-    type: 'function',
-    name: 'finalize',
-    stateMutability: 'nonpayable',
-    inputs: [{ name: 'claimId', type: 'uint256' }],
-    outputs: [],
-  },
-  {
-    type: 'function',
-    name: 'isMember',
-    stateMutability: 'view',
-    inputs: [
-      { name: 'claimId', type: 'uint256' },
-      { name: 'validator', type: 'address' },
-    ],
-    outputs: [{ type: 'bool' }],
   },
   {
     type: 'function',
@@ -140,12 +126,11 @@ export const attestationEngineAbi = [
           { name: 'id', type: 'uint256' },
           { name: 'challengeId', type: 'uint256' },
           { name: 'claimant', type: 'address' },
-          { name: 'submissionBlock', type: 'uint64' },
-          { name: 'voteDeadline', type: 'uint64' },
+          { name: 'submittedAt', type: 'uint64' },
+          { name: 'challengeDeadline', type: 'uint64' },
+          { name: 'bond', type: 'uint256' },
           { name: 'artifactCID', type: 'bytes32' },
           { name: 'status', type: 'uint8' },
-          { name: 'yesVotes', type: 'uint8' },
-          { name: 'noVotes', type: 'uint8' },
         ],
       },
     ],
@@ -157,17 +142,29 @@ export const attestationEngineAbi = [
       { name: 'claimId', type: 'uint256', indexed: true },
       { name: 'challengeId', type: 'uint256', indexed: true },
       { name: 'claimant', type: 'address', indexed: true },
-      { name: 'submissionBlock', type: 'uint64', indexed: false },
+      { name: 'submittedAt', type: 'uint64', indexed: false },
+      { name: 'challengeDeadline', type: 'uint64', indexed: false },
+      { name: 'bond', type: 'uint256', indexed: false },
       { name: 'artifactCID', type: 'bytes32', indexed: false },
     ],
   },
   {
     type: 'event',
-    name: 'CommitteeDrawn',
+    name: 'FraudProven',
     inputs: [
       { name: 'claimId', type: 'uint256', indexed: true },
-      { name: 'committee', type: 'address[]', indexed: false },
-      { name: 'voteDeadline', type: 'uint64', indexed: false },
+      { name: 'prover', type: 'address', indexed: true },
+      { name: 'rewardToProver', type: 'uint256', indexed: false },
+      { name: 'burned', type: 'uint256', indexed: false },
+    ],
+  },
+  {
+    type: 'event',
+    name: 'ClaimFinalized',
+    inputs: [
+      { name: 'claimId', type: 'uint256', indexed: true },
+      { name: 'accepted', type: 'bool', indexed: false },
+      { name: 'bondReturned', type: 'uint256', indexed: false },
     ],
   },
 ] as const;

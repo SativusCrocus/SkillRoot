@@ -30,7 +30,7 @@ const jetbrains = JetBrains_Mono({
 export const metadata: Metadata = {
   title: 'SkillRoot — Decentralized Skill Attestation',
   description:
-    'The Bitcoin-level primitive for human capability signaling. Prove knowledge with zero-knowledge proofs, verified by stake-weighted committees, recorded permanently on-chain.',
+    'A cryptographic primitive for human capability signaling. Prove knowledge with zero-knowledge proofs, verified on-chain, recorded permanently on Base.',
   keywords: ['zkp', 'attestation', 'skill', 'decentralized', 'on-chain', 'groth16'],
   icons: {
     icon: [
