@@ -95,6 +95,7 @@ export const challengeRegistryAbi = [
           { name: 'circuitHash', type: 'bytes32' },
           { name: 'signalWeight', type: 'uint256' },
           { name: 'status', type: 'uint8' },
+          { name: 'rejectionDeadline', type: 'uint64' },
         ],
       },
     ],
